@@ -4,13 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SplashActivity"
+    android:background="@color/primary_500">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
+
+    <ImageView
+        android:id="@+id/animatedLogo"
+        android:layout_width="300dp"
+        android:layout_height="77dp"
+        android:layout_marginLeft="54dp"
+        android:layout_marginRight="54dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/logo_desc"
+        android:drawable="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
