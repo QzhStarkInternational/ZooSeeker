@@ -10,19 +10,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SanDiegoZooSeeker">
         <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:theme="@style/Theme.SanDiegoZooSeeker"
-            android:screenOrientation="nosensor"/>
-        <activity
-            android:name=".SplashActivity"
+            android:name=".LoadActivity"
             android:exported="true"
-            android:theme="@style/Theme.SanDiegoZooSeeker.SplashScreen"
-            android:screenOrientation="nosensor">
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="nosensor"
+            android:enabled="@bool/activity_2_enabled"
+            android:theme="@style/Theme.SanDiegoZooSeeker">
         </activity>
     </application>
 

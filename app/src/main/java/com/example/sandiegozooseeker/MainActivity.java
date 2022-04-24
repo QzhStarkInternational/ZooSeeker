@@ -1,6 +1,7 @@
 package com.example.sandiegozooseeker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
 import android.os.Bundle;
 

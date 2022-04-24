@@ -4,21 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashActivity"
+    tools:context=".LoadActivity"
     android:background="@color/primary_500">
-
 
     <ImageView
         android:id="@+id/animatedLogo"
         android:layout_width="300dp"
-        android:layout_height="77dp"
-        android:layout_marginLeft="54dp"
-        android:layout_marginRight="54dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/logo_desc"
-        android:drawable="@android:color/transparent"
+        android:layout_height="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.40"
+        android:contentDescription="@string/logo_desc" />
 </androidx.constraintlayout.widget.ConstraintLayout>
