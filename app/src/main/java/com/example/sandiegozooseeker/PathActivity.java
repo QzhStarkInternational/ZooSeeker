@@ -24,9 +24,7 @@ public class PathActivity extends AppCompatActivity {
 
 
         //change data source to database
-        //VertexDao vertexDao = VertexDatabase.getSingleton(this).vertexDao();
-        VertexDatabase db = VertexDatabase.getSingleton(this);
-        VertexDao vertexDao = db.vertexDao();
+        VertexDao vertexDao = VertexDatabase.getSingleton(this).vertexDao();
         List<Vertex> vertices = vertexDao.getAll();
 
         VertexViewModel viewModel = new ViewModelProvider(this)
@@ -35,7 +33,7 @@ public class PathActivity extends AppCompatActivity {
         VertexListAdapter adapter = new VertexListAdapter();
         adapter.setHasStableIds(true);
         //adapter.setOnDeleteClickedHandler(viewModel::deleteVertex);
-        adapter.setOnCheckBoxClickedHandler(viewModel::toggleChecked);
+        adapter.setOnLayoutClickedHandler(viewModel::toggleClicked);
         viewModel.getVertices().observe(this, adapter::setVertices);
 
         adapter.setVertices(vertices);

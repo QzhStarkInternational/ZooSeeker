@@ -1,5 +1,6 @@
 package com.example.sandiegozooseeker;
 
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
@@ -17,8 +19,7 @@ import java.util.function.Consumer;
 public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.ViewHolder> {
     private List<Vertex> vertices = Collections.emptyList();
     //adding and deleting record in database
-    private BiConsumer<Vertex, CheckBox> onCheckBoxClicked;
-    //private Consumer<Vertex> onDeleteClicked;
+    private BiConsumer<Vertex, ConstraintLayout> onLayoutClicked;
 
     public void setVertices(List<Vertex> newVertices) {
         this.vertices.clear();
@@ -29,8 +30,8 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
 //    public void setOnDeleteClickedHandler(Consumer<Vertex> onDeleteClicked) {
 //        this.onDeleteClicked = onDeleteClicked;
 //    }
-    public void setOnCheckBoxClickedHandler(BiConsumer<Vertex, CheckBox> onCheckBoxClicked) {
-        this.onCheckBoxClicked = onCheckBoxClicked;
+    public void setOnLayoutClickedHandler(BiConsumer<Vertex, ConstraintLayout> onLayoutClicked) {
+        this.onLayoutClicked = onLayoutClicked;
     }
 
     @NonNull
@@ -38,7 +39,7 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.vertex_list_item,parent,false);
+                .inflate(R.layout.street_distance_name_list,parent,false);
 
         return new ViewHolder(view);
     }
@@ -62,24 +63,19 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private Vertex vertex;
-        private final CheckBox checkBox;
+        private final ConstraintLayout layout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.textView = itemView.findViewById(R.id.vertex_list_item);
-            this.checkBox = itemView.findViewById(R.id.add_animal);
+            this.textView = itemView.findViewById(R.id.animal_name);
+            this.layout = itemView.findViewById(R.id.add_animal_layout);
 
 
-            this.checkBox.setOnClickListener(view -> {
-                if (onCheckBoxClicked == null) return;
-                onCheckBoxClicked.accept(vertex, checkBox);
+            this.layout.setOnClickListener(view -> {
+                if (onLayoutClicked == null) return;
+                onLayoutClicked.accept(vertex, layout);
             });
 
-            //remove animal record in your plan
-//            itemView.findViewById(R.id.remove_animal).setOnClickListener(view -> {
-//                if (onDeleteClicked == null) return;
-//                onDeleteClicked.accept(vertex);
-//            });
         }
 
         public Vertex getVertex() { return vertex; }
@@ -87,7 +83,7 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
             this.textView.setText(vertex.name);
-            this.checkBox.setChecked(vertex.isSelected);
+            //this.checkBox.setChecked(vertex.isSelected);
         }
     }
 

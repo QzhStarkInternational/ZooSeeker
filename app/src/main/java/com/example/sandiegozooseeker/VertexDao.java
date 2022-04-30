@@ -34,6 +34,6 @@ public interface VertexDao {
     @Delete
     int delete(Vertex vertex);
 
-    @Delete
-    void deleteAll(Vertex vertex);
+    @Query("DELETE FROM animal_vertex")
+    void clearAllRows();
 }

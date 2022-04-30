@@ -37,17 +37,21 @@ public class MainActivity extends AppCompatActivity {
         adapter.setHasStableIds(true);
         adapter.setVertices(Vertex.loadJSON(this,"sample_node_info.json"));
         //associated with the wrong activity (?)
-        adapter.setOnCheckBoxClickedHandler(viewModel::toggleChecked);
+        adapter.setOnLayoutClickedHandler(viewModel::toggleClickedAddToArray);
 
         //launch PathActivity Page
         this.createPlan = this.findViewById(R.id.button);
         this.createPlan.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //populate database
+                vertexDao.clearAllRows();
+                vertexDao.insertAll(viewModel.getAddedAnimals());
+                //you can remove this line if you want to go back and still retain state
+                viewModel.clearAddedAnimals();
+
                 Intent intent = new Intent(MainActivity.this, PathActivity.class);
                 startActivity(intent);
-
-                //delete database
-
+               //System.out.println(viewModel.getAddedAnimals());
             }
         });
 
