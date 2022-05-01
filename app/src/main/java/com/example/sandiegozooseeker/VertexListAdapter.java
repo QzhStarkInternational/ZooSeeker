@@ -70,7 +70,7 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
             this.textView = itemView.findViewById(R.id.animal_name);
             this.layout = itemView.findViewById(R.id.add_animal_layout);
 
-
+            
             this.layout.setOnClickListener(view -> {
                 if (onLayoutClicked == null) return;
                 onLayoutClicked.accept(vertex, layout);

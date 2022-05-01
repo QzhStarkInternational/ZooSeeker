@@ -6,6 +6,8 @@
     android:layout_height="80dp"
     android:clickable="true"
     android:id="@+id/add_animal_layout">
+    
+
 
     <TextView
         android:id="@+id/distance_display"
@@ -16,7 +18,8 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="50dp"
 
-        android:text="1.75 mi -"
+
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -31,7 +34,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginBottom="16dp"
 
-        android:text=" Description"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
 
         app:layout_constraintTop_toTopOf="parent"
@@ -43,6 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="50dp"
+        android:visibility="invisible"
+
 
         android:drawableStart="@drawable/ic_baseline_pin_drop_14"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -58,7 +63,8 @@
         android:layout_marginTop="25dp"
         android:layout_marginRight="48dp"
 
-        android:text="Name"
+        android:hint="name"
+        android:text=""
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/loc_icon"
