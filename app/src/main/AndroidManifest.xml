@@ -10,22 +10,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SanDiegoZooSeeker">
         <activity
+            android:name=".PathActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoadActivity"
             android:exported="true"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
+            android:enabled="@bool/activity_2_enabled"
             android:exported="true"
             android:screenOrientation="nosensor"
-            android:enabled="@bool/activity_2_enabled"
-            android:theme="@style/Theme.SanDiegoZooSeeker">
-        </activity>
+            android:theme="@style/Theme.SanDiegoZooSeeker"></activity>
     </application>
 
 </manifest>
