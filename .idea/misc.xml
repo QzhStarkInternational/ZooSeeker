@@ -26,6 +26,14 @@
         <entry key="app/src/main/res/layout/activity_path.xml" value="0.14266304347826086" />
         <entry key="app/src/main/res/layout/street_distance_name_list.xml" value="0.22641509433962265" />
         <entry key="app/src/main/res/layout/vertex_list_item.xml" value="0.14266304347826086" />
+
+        <entry key="..\:/Users/joann/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/find_fragment.xml" value="0.1796875" />
+        <entry key="..\:/Users/joann/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/query_fragment.xml" value="0.165625" />
+        <entry key="app/src/main/res/drawable/logo_animated_vector_full.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_load_screen.xml" value="0.2824074074074074" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1978798586572438" />
+        <entry key="app/src/main/res/layout/search_fragment.xml" value="0.228125" />
+        <entry key="app/src/main/res/layout/search_fragment_activity.xml" value="0.2421875" />
       </map>
     </option>
   </component>
