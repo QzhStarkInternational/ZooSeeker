@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
+//testing
 public class VertexDatabaseTest {
     private VertexDao dao;
     private VertexDatabase db;

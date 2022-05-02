@@ -17,6 +17,16 @@
         <entry key="..\:/Users/bibas/AndroidStudioProjects/SanDiegoZooSeeker/app/src/main/res/layout/activity_load_screen.xml" value="0.5307971014492754" />
         <entry key="..\:/Users/bibas/AndroidStudioProjects/SanDiegoZooSeeker/app/src/main/res/layout/activity_main.xml" value="0.6" />
         <entry key="..\:/Users/bibas/AndroidStudioProjects/SanDiegoZooSeeker/app/src/main/res/layout/activity_splash.xml" value="0.4067028985507246" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/activity_load_screen.xml" value="0.2546875" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/activity_main.xml" value="0.12129629629629629" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/activity_path.xml" value="0.3" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/street_distance_name_list.xml" value="0.2" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/vertex_list_item.xml" value="0.4" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.14266304347826086" />
+        <entry key="app/src/main/res/layout/activity_path.xml" value="0.14266304347826086" />
+        <entry key="app/src/main/res/layout/street_distance_name_list.xml" value="0.22641509433962265" />
+        <entry key="app/src/main/res/layout/vertex_list_item.xml" value="0.14266304347826086" />
+
         <entry key="..\:/Users/joann/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/find_fragment.xml" value="0.1796875" />
         <entry key="..\:/Users/joann/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/query_fragment.xml" value="0.165625" />
         <entry key="app/src/main/res/drawable/logo_animated_vector_full.xml" value="0.1" />
@@ -27,6 +37,7 @@
       </map>
     </option>
   </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
