@@ -24,21 +24,21 @@ public interface VertexDao {
     @Query("SELECT * FROM `animal_vertex`")
     List<Vertex> getAll();
 
-    @Query("SELECT * FROM `animal_vertex` WHERE `isSelected`=:isSelected")
-    List<Vertex> getSelectedAll(Boolean isSelected);
+    @Query("SELECT * FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
+    List<Vertex> getSelectedExhibits(Vertex.Kind kind);
 
-    @Query("SELECT * FROM `animal_vertex` WHERE `isSelected`")
-    LiveData<List<Vertex>> getSelectedLive();
+    @Query("SELECT * FROM `animal_vertex` WHERE `kind`=:kind")
+    List<Vertex> getAllOfKind(Vertex.Kind kind);
 
-    @Query("SELECT * FROM `animal_vertex` ORDER BY `kind`")
-    LiveData<List<Vertex>> getAllLive();
+    @Query("SELECT * FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
+    LiveData<List<Vertex>> getSelectedOfKindLive(Vertex.Kind kind);
+
+    @Query("SELECT * FROM `animal_vertex` WHERE `kind`=:kind")
+    LiveData<List<Vertex>> getAllOfKindLive(Vertex.Kind kind);
 
     @Update
     int update(Vertex vertex);
 
     @Delete
     int delete(Vertex vertex);
-
-    @Query("DELETE FROM animal_vertex")
-    void clearAllRows();
 }

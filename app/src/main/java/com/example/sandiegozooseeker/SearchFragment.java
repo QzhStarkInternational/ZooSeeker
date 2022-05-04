@@ -37,7 +37,6 @@ public class SearchFragment extends Fragment {
 
         viewModel.getVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
-
         recyclerView = requireActivity().findViewById(R.id.vertex_items_search);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);

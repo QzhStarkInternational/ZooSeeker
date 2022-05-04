@@ -46,12 +46,10 @@ public class VertexViewModel extends AndroidViewModel {
     }
 
     private void loadAnimals() {
-        vertices = vertexDao.getAllLive();
+        vertices = vertexDao.getAllOfKindLive(Vertex.Kind.EXHIBIT);
     }
-
-
     private void loadSelectedAnimals() {
-        selectedVertices = vertexDao.getSelectedLive();
+        selectedVertices = vertexDao.getSelectedOfKindLive(Vertex.Kind.EXHIBIT);
     }
 
     public void toggleClicked(Vertex vertex, View view) {
