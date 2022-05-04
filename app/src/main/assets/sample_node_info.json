@@ -69,5 +69,35 @@
             "fox",
             "mammal"
         ]
+    },
+    {
+        "id": "bitch",
+        "kind": "exhibit",
+        "name": "Arctic Foxes",
+        "tags": [
+            "arctic",
+            "fox",
+            "mammal"
+        ]
+    },
+    {
+        "id": "bib",
+        "kind": "exhibit",
+        "name": "Arctic Foxes",
+        "tags": [
+            "arctic",
+            "fox",
+            "mammal"
+        ]
+    },
+    {
+        "id": "bob",
+        "kind": "exhibit",
+        "name": "Arctic Foxes",
+        "tags": [
+            "arctic",
+            "fox",
+            "mammal"
+        ]
     }
 ]

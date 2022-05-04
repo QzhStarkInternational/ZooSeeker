@@ -7,9 +7,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
-
 import java.util.List;
-//dao stands for data access object and represents the ways in which we may interact with entities
+
 @Dao
 public interface VertexDao {
     @Insert (onConflict = OnConflictStrategy.REPLACE)
@@ -37,8 +36,8 @@ public interface VertexDao {
     LiveData<List<Vertex>> getAllOfKindLive(Vertex.Kind kind);
 
     @Update
-    int update(Vertex vertex);
+    void update(Vertex vertex);
 
     @Delete
-    int delete(Vertex vertex);
+    void delete(Vertex vertex);
 }

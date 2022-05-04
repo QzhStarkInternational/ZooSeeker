@@ -25,6 +25,7 @@
 
     <style name="ThemeOverlay.App.BottomNavigationView" parent="">
         <item name="colorSurface">@color/secondary_500</item>
+        <item name="colorOnSurfaceVariant">@color/grey_500</item>
         <item name="colorSecondaryContainer">@color/secondary_200</item>
     </style>
 

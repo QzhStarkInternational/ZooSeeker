@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.widget.ImageView;
 
+import java.util.List;
 import java.util.Timer;
 
 public class LoadActivity extends AppCompatActivity {
@@ -68,7 +69,6 @@ public class LoadActivity extends AppCompatActivity {
                     1400
             );
         }
-
-        VertexDatabase db = VertexDatabase.getSingleton(getApplicationContext());
+        VertexDao db = VertexDatabase.getSingleton(getApplicationContext()).vertexDao();
     }
 }
