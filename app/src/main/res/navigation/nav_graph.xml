@@ -7,15 +7,15 @@
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.sandiegozooseeker.SearchFragment"
+        android:name="com.example.sandiegozooseeker.fragments.SearchFragment"
         android:label="SearchFragment" />
     <fragment
         android:id="@+id/pathFragment"
-        android:name="com.example.sandiegozooseeker.PlanFragment"
+        android:name="com.example.sandiegozooseeker.fragments.PlanFragment"
         android:label="PathFragment" />
     <fragment
         android:id="@+id/navigateFragment"
-        android:name="com.example.sandiegozooseeker.NavigateFragment"
+        android:name="com.example.sandiegozooseeker.fragments.NavigateFragment"
         android:label="NavigateFragment" />
 
 </navigation>

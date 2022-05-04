@@ -1,21 +1,17 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.AnimalDB;
 
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+
 import java.util.List;
 
 public class VertexViewModel extends AndroidViewModel {

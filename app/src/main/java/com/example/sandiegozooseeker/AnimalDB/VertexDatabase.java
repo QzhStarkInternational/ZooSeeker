@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.AnimalDB;
 
 import android.content.Context;
 
@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 

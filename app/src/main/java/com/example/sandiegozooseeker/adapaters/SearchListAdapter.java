@@ -1,7 +1,6 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.adapaters;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.R;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 

@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.AnimalDB;
 
 import android.content.Context;
 
@@ -37,7 +37,7 @@ public class Vertex {
     public boolean isSelected;
 
     //2. Constructor matching fields above
-    Vertex(String id, Kind kind, String name, List<String> tags) {
+    public Vertex(String id, Kind kind, String name, List<String> tags) {
         this.id = id;
         this.kind = kind;
         this.name = name;

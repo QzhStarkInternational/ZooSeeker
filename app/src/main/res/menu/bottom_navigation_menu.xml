@@ -4,17 +4,17 @@
         android:id="@+id/searchFragment"
         android:enabled="true"
         android:icon="@drawable/search_fill0_wght400_grad0_opsz48"
-        android:title="Search" />
+        android:title="@string/search_tab_text" />
 
     <item
         android:id="@+id/pathFragment"
         android:enabled="true"
         android:icon="@drawable/list_alt_checkable_48"
-        android:title="Plan"/>
+        android:title="@string/plan_tab_text"/>
 
     <item
         android:id="@+id/navigateFragment"
         android:enabled="true"
         android:icon="@drawable/navigation_checkable_48"
-        android:title="Navigate"/>
+        android:title="@string/navigate_tab_text"/>
 </menu>

@@ -1,10 +1,12 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.example.sandiegozooseeker.R;
 
 public class NavigateFragment extends Fragment {
     public NavigateFragment(){

@@ -5,13 +5,13 @@ import androidx.core.splashscreen.SplashScreen;
 
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.widget.ImageView;
 
-import java.util.List;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+
 import java.util.Timer;
 
 public class LoadActivity extends AppCompatActivity {

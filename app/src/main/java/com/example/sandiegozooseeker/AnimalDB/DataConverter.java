@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.AnimalDB;
 
 import androidx.room.ProvidedTypeConverter;
 import androidx.room.TypeConverter;

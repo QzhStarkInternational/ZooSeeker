@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +8,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.sandiegozooseeker.AnimalDB.VertexViewModel;
+import com.example.sandiegozooseeker.R;
+import com.example.sandiegozooseeker.adapaters.PlanListAdapter;
 
 public class PlanFragment extends Fragment {
     public RecyclerView recyclerView;

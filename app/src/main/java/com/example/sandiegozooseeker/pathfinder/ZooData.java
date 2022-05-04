@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.pathfinder;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

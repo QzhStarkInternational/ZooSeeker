@@ -6,10 +6,14 @@ import static org.junit.Assert.assertNull;
 
 import android.content.Context;
 
-import androidx.room.ProvidedTypeConverter;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.example.sandiegozooseeker.AnimalDB.DataConverter;
+import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 
 import org.junit.After;
 import org.junit.Before;
