@@ -24,7 +24,6 @@ public interface VertexDao {
     @Query("SELECT * FROM `animal_vertex`")
     List<Vertex> getAll();
 
-    //temporarily get all regardless of order
     @Query("SELECT * FROM `animal_vertex` ORDER BY `kind`")
     LiveData<List<Vertex>> getAllLive();
 

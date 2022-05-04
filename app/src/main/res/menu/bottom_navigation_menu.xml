@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/searchFragment"
+        android:enabled="true"
+        android:icon="@drawable/search_fill0_wght400_grad0_opsz48"
+        android:title="Search" />
+
+    <item
+        android:id="@+id/pathFragment"
+        android:enabled="true"
+        android:icon="@drawable/list_alt_checkable_48"
+        android:title="Plan"/>
+
+    <item
+        android:id="@+id/navigateFragment"
+        android:enabled="true"
+        android:icon="@drawable/navigation_checkable_48"
+        android:title="Navigate"/>
+</menu>

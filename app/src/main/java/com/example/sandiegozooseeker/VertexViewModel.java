@@ -18,25 +18,26 @@ import java.util.Collections;
 import java.util.List;
 
 public class VertexViewModel extends AndroidViewModel {
-    //get updated info on UI when database changes
     private LiveData<List<Vertex>> vertices;
     private final VertexDao vertexDao;
-    private List<Vertex> addedAnimals = new ArrayList<Vertex>();
+    private List<Vertex> addedAnimals;
 
     public VertexViewModel(@NonNull Application application) {
         super(application);
         Context context = getApplication().getApplicationContext();
         VertexDatabase db = VertexDatabase.getSingleton(context);
+
         vertexDao = db.vertexDao();
+        addedAnimals = new ArrayList<Vertex>();
     }
 
     public LiveData<List<Vertex>> getVertices() {
         if (vertices == null) {
-            loadUsers();
+            loadAnimals();
         }
         return vertices;
     }
-    private void loadUsers() {
+    private void loadAnimals() {
         vertices = vertexDao.getAllLive();
     }
 

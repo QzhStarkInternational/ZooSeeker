@@ -24,12 +24,10 @@ public abstract class VertexDatabase extends RoomDatabase {
         if (singleton == null) {
             singleton = VertexDatabase.makeDatabase(context);
         }
+
         return singleton;
     }
 
-    //populate the database with 'sample_node_info.json'
-    //add type converter -- omg finally fixed the app failing!
-    //should i create an empty database?
     private static VertexDatabase makeDatabase(Context context) {
         return Room.databaseBuilder(context, VertexDatabase.class, "vertex_animals.db")
                 .allowMainThreadQueries()
@@ -38,11 +36,6 @@ public abstract class VertexDatabase extends RoomDatabase {
                     @Override
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
-//                        Executors.newSingleThreadScheduledExecutor().execute(()-> {
-//                            List<Vertex> vertex = Vertex
-//                                    .loadJSON(context, "sample_node_info.json");
-//                            getSingleton(context).vertexDao().insertAll(vertex);
-//                        });
                     }
                 })
                 .build();

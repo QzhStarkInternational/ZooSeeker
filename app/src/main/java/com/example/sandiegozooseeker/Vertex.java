@@ -20,9 +20,7 @@ import java.util.List;
 
 @Entity(tableName = "animal_vertex")
 public class Vertex {
-    public static enum Kind {
-        // The SerializedName annotation tells GSON how to convert
-        // from the strings in our JSON to this Enum.
+    public enum Kind {
         @SerializedName("gate") GATE,
         @SerializedName("exhibit") EXHIBIT,
         @SerializedName("intersection") INTERSECTION
@@ -36,7 +34,7 @@ public class Vertex {
     public Kind kind;
     public String name;
     public List<String> tags;
-    //public boolean isSelected = false;
+    public boolean isSelected;
 
     //2. Constructor matching fields above
     Vertex(String id, Kind kind, String name, List<String> tags) {
@@ -44,9 +42,9 @@ public class Vertex {
         this.kind = kind;
         this.name = name;
         this.tags = tags;
+        this.isSelected = false;
     }
 
-    //3. Factory method for loading our JSON
     public static List<Vertex> loadJSON(Context context, String path) {
         try {
             InputStream input = context.getAssets().open(path);
@@ -60,6 +58,7 @@ public class Vertex {
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Vertex{" +
@@ -67,6 +66,7 @@ public class Vertex {
                 ", kind=" + kind +
                 ", name='" + name + '\'' +
                 ", tags=" + tags +
+                ", isSelected=" + isSelected +
                 '}';
     }
 }

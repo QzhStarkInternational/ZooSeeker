@@ -1,30 +1,33 @@
 package com.example.sandiegozooseeker;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.util.Log;
-
 import java.util.List;
+import java.util.Objects;
 
-public class PathActivity extends AppCompatActivity {
+public class PathFragment extends Fragment {
     public RecyclerView recyclerView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_path);
+    public PathFragment(){
+        super(R.layout.path_fragment);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         //test out Vertex class works
 //        List<Vertex> vertex = Vertex.loadJSON(this,"sample_node_info.json");
 //        Log.d("Vertices",vertex.toString());
 
 
         //change data source to database
-        VertexDao vertexDao = VertexDatabase.getSingleton(this).vertexDao();
+        VertexDao vertexDao = VertexDatabase.getSingleton(getContext()).vertexDao();
         List<Vertex> vertices = vertexDao.getAll();
 
         VertexViewModel viewModel = new ViewModelProvider(this)
@@ -34,7 +37,7 @@ public class PathActivity extends AppCompatActivity {
         adapter.setHasStableIds(true);
         //adapter.setOnDeleteClickedHandler(viewModel::deleteVertex);
         adapter.setOnLayoutClickedHandler(viewModel::toggleClicked);
-        viewModel.getVertices().observe(this, adapter::setVertices);
+        viewModel.getVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
         adapter.setVertices(vertices);
 
@@ -43,9 +46,8 @@ public class PathActivity extends AppCompatActivity {
 
         //adapter.setVertices(Vertex.loadJSON(this,"sample_node_info.json"));
 
-        recyclerView = findViewById(R.id.vertex_items_plan);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView = requireView().findViewById(R.id.vertex_items_plan);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-
     }
 }
