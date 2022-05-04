@@ -45,7 +45,7 @@ public class Pathfinder {
                 }
             }
             paths.add(minPath);
-            start = vInfo.get(minPath.getEndVertex().toString()).name;
+            start = minPath.getEndVertex();
             tempExhibits.remove(start);
         }
 
@@ -55,7 +55,7 @@ public class Pathfinder {
         return paths;
     }
 
-    private int pathDistance(GraphPath<String, IdentifiedWeightedEdge> path) {
+    public int pathDistance(GraphPath<String, IdentifiedWeightedEdge> path) {
         int distance = 0;
         for (IdentifiedWeightedEdge e : path.getEdgeList()) {
             distance += g.getEdgeWeight(e);
