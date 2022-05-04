@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:clickable="true"
-    android:id="@+id/add_animal_layout">
-    
-
+    android:id="@+id/plan_list_item_layout">
 
     <TextView
         android:id="@+id/distance_display"
@@ -17,8 +15,6 @@
         android:layout_marginRight="260dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="50dp"
-
-
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

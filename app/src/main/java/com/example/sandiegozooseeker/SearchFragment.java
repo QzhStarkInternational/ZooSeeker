@@ -31,14 +31,14 @@ public class SearchFragment extends Fragment {
         VertexViewModel viewModel = new ViewModelProvider(requireActivity())
                 .get(VertexViewModel.class);
 
-        VertexListAdapter adapter = new VertexListAdapter();
+        SearchListAdapter adapter = new SearchListAdapter();
         adapter.setHasStableIds(true);
         adapter.setOnClickedHandler(viewModel::toggleClicked);
 
         viewModel.getVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
         recyclerView = requireActivity().findViewById(R.id.vertex_items_search);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         recyclerView.setAdapter(adapter);
     }
 }

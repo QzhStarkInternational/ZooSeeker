@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="primary_100">#3FD6E4D6</color>
+    <color name="primary_200">#F04CAF50</color>
     <color name="primary_500">#FF4CAF50</color>
     <color name="secondary_700">#FFAFFFD0</color>
     <color name="secondary_500">#FFCFEAD1</color>
@@ -7,6 +9,7 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="semi_transparent">#41000000</color>
     <color name="transparent">#00000000</color>
 
     <color name="grey_100">#0A000000</color>

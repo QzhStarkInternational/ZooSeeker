@@ -9,14 +9,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-import java.util.Objects;
-
-public class PathFragment extends Fragment {
+public class PlanFragment extends Fragment {
     public RecyclerView recyclerView;
 
-    public PathFragment(){
-        super(R.layout.path_fragment);
+    public PlanFragment(){
+        super(R.layout.plan_fragment);
     }
 
     @Override
@@ -25,7 +22,7 @@ public class PathFragment extends Fragment {
         VertexViewModel viewModel = new ViewModelProvider(requireActivity())
                 .get(VertexViewModel.class);
 
-        VertexListAdapter adapter = new VertexListAdapter();
+        PlanListAdapter adapter = new PlanListAdapter();
         adapter.setHasStableIds(true);
         adapter.setOnClickedHandler(viewModel::toggleClicked);
         viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);

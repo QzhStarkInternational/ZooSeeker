@@ -11,7 +11,7 @@
         android:label="SearchFragment" />
     <fragment
         android:id="@+id/pathFragment"
-        android:name="com.example.sandiegozooseeker.PathFragment"
+        android:name="com.example.sandiegozooseeker.PlanFragment"
         android:label="PathFragment" />
     <fragment
         android:id="@+id/navigateFragment"
