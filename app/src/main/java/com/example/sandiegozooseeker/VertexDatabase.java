@@ -33,12 +33,13 @@ public abstract class VertexDatabase extends RoomDatabase {
                 .allowMainThreadQueries()
                 .addTypeConverter(new DataConverter())
                 .addCallback(new Callback() {
-                    @Override
+
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
+                        List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+                        getSingleton(context).vertexDao().insertAll(vertices);
                     }
-                })
-                .build();
+                }).build();
     }
 
     @VisibleForTesting
@@ -46,6 +47,7 @@ public abstract class VertexDatabase extends RoomDatabase {
         if (singleton != null) {
             singleton.close();
         }
+
         singleton = vertexDatabase;
     }
 }

@@ -18,8 +18,7 @@ import java.util.function.Consumer;
 
 public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.ViewHolder> {
     private List<Vertex> vertices = Collections.emptyList();
-    //adding and deleting record in database
-    private BiConsumer<Vertex, ConstraintLayout> onLayoutClicked;
+    private BiConsumer<Vertex, View> onClicked;
 
     public void setVertices(List<Vertex> newVertices) {
         this.vertices.clear();
@@ -27,11 +26,9 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
         notifyDataSetChanged();
     }
 
-//    public void setOnDeleteClickedHandler(Consumer<Vertex> onDeleteClicked) {
-//        this.onDeleteClicked = onDeleteClicked;
-//    }
-    public void setOnLayoutClickedHandler(BiConsumer<Vertex, ConstraintLayout> onLayoutClicked) {
-        this.onLayoutClicked = onLayoutClicked;
+
+    public void setOnClickedHandler(BiConsumer<Vertex, View> onClicked) {
+        this.onClicked = onClicked;
     }
 
     @NonNull
@@ -62,20 +59,18 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
     //each VH is going to keep track of the TextView inside it as well as the individual Vertex it is responsible for displaying
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
+        private final View view;
         private Vertex vertex;
-        private final ConstraintLayout layout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.animal_name);
-            this.layout = itemView.findViewById(R.id.add_animal_layout);
+            this.view = itemView.findViewById(R.id.add_animal_layout);
 
-            
-            this.layout.setOnClickListener(view -> {
-                if (onLayoutClicked == null) return;
-                onLayoutClicked.accept(vertex, layout);
+            view.setOnClickListener(view -> {
+                if (onClicked == null) return;
+                onClicked.accept(vertex, itemView);
             });
-
         }
 
         public Vertex getVertex() { return vertex; }
@@ -83,7 +78,6 @@ public class VertexListAdapter extends RecyclerView.Adapter<VertexListAdapter.Vi
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
             this.textView.setText(vertex.name);
-            //this.checkBox.setChecked(vertex.isSelected);
         }
     }
 

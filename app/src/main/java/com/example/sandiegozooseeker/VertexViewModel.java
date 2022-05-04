@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
@@ -18,17 +19,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class VertexViewModel extends AndroidViewModel {
-    private LiveData<List<Vertex>> vertices;
+    private LiveData<List<Vertex>> vertices = null;
+    private LiveData<List<Vertex>> selectedVertices = null;
     private final VertexDao vertexDao;
-    private List<Vertex> addedAnimals;
 
     public VertexViewModel(@NonNull Application application) {
         super(application);
-        Context context = getApplication().getApplicationContext();
+        Context context = application.getApplicationContext();
         VertexDatabase db = VertexDatabase.getSingleton(context);
-
         vertexDao = db.vertexDao();
-        addedAnimals = new ArrayList<Vertex>();
     }
 
     public LiveData<List<Vertex>> getVertices() {
@@ -37,44 +36,26 @@ public class VertexViewModel extends AndroidViewModel {
         }
         return vertices;
     }
+
+    public LiveData<List<Vertex>> getSelectedVertices(){
+        if(selectedVertices == null){
+            loadSelectedAnimals();
+        }
+
+        return selectedVertices;
+    }
+
     private void loadAnimals() {
         vertices = vertexDao.getAllLive();
     }
 
-    //remove record
-    public void deleteVertex(Vertex vertex) {
-        vertexDao.delete(vertex);
+
+    private void loadSelectedAnimals() {
+        selectedVertices = vertexDao.getSelectedLive();
     }
 
-    //okay it works but you gotta click twice
-    public void toggleClickedAddToArray(Vertex vertex, ConstraintLayout layout) {
-        //this one is for calling in main activity to add to an arraylist and then populating the database
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!addedAnimals.contains(vertex)) {
-                    addedAnimals.add(vertex);
-                }
-            }
-        });
+    public void toggleClicked(Vertex vertex, View view) {
+        vertex.isSelected = !vertex.isSelected;
+        vertexDao.update(vertex);
     }
-
-    //okay it works but you gotta click twice
-    public void toggleClicked(Vertex vertex, ConstraintLayout layout) {
-        //this one is for editing the plan list
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                vertexDao.delete(vertex);
-            }
-        });
-    }
-
-    public List<Vertex> getAddedAnimals() {
-        return addedAnimals;
-    }
-    public void clearAddedAnimals() {
-        addedAnimals.clear();
-    }
-
 }

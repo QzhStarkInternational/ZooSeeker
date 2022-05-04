@@ -2,6 +2,7 @@ package com.example.sandiegozooseeker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
 import java.util.Objects;
 
 public class SearchFragment extends Fragment {
@@ -26,15 +28,15 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        VertexDao vertexDao = VertexDatabase.getSingleton(getActivity()).vertexDao();
-
-        VertexViewModel viewModel = new ViewModelProvider(this)
+        VertexViewModel viewModel = new ViewModelProvider(requireActivity())
                 .get(VertexViewModel.class);
 
         VertexListAdapter adapter = new VertexListAdapter();
         adapter.setHasStableIds(true);
-        adapter.setVertices(Vertex.loadJSON(requireActivity(),"sample_node_info.json"));
-        adapter.setOnLayoutClickedHandler(viewModel::toggleClickedAddToArray);
+        adapter.setOnClickedHandler(viewModel::toggleClicked);
+
+        viewModel.getVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
+
 
         recyclerView = requireActivity().findViewById(R.id.vertex_items_search);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

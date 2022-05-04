@@ -24,6 +24,12 @@ public interface VertexDao {
     @Query("SELECT * FROM `animal_vertex`")
     List<Vertex> getAll();
 
+    @Query("SELECT * FROM `animal_vertex` WHERE `isSelected`=:isSelected")
+    List<Vertex> getSelectedAll(Boolean isSelected);
+
+    @Query("SELECT * FROM `animal_vertex` WHERE `isSelected`")
+    LiveData<List<Vertex>> getSelectedLive();
+
     @Query("SELECT * FROM `animal_vertex` ORDER BY `kind`")
     LiveData<List<Vertex>> getAllLive();
 

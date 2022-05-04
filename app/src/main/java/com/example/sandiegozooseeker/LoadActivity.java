@@ -69,6 +69,6 @@ public class LoadActivity extends AppCompatActivity {
             );
         }
 
-
+        VertexDatabase db = VertexDatabase.getSingleton(getApplicationContext());
     }
 }
