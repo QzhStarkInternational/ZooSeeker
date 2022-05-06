@@ -2,6 +2,8 @@ package com.example.sandiegozooseeker.AnimalDB;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,10 @@ import androidx.lifecycle.LiveData;
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.google.android.material.textfield.TextInputEditText;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -52,4 +58,5 @@ public class VertexViewModel extends AndroidViewModel {
         vertex.isSelected = !vertex.isSelected;
         vertexDao.update(vertex);
     }
+
 }
