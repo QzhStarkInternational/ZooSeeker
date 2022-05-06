@@ -36,6 +36,9 @@ public interface VertexDao {
     @Query("SELECT * FROM `animal_vertex` WHERE `kind`=:kind")
     public LiveData<List<Vertex>> getAllOfKindLive(Vertex.Kind kind);
 
+//    @Query("SELECT * FROM `animal_vertex` WHERE CONTAINS(tags, :searchTerm)")
+//    public LiveData<List<Vertex>> getSearchedExhibits(String searchTerm);
+
     @Update
     public void update(Vertex vertex);
 
