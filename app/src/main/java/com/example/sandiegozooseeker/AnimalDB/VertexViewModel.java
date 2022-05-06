@@ -13,11 +13,15 @@ import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VertexViewModel extends AndroidViewModel {
     private LiveData<List<Vertex>> vertices = null;
     private LiveData<List<Vertex>> selectedVertices = null;
     private final VertexDao vertexDao;
+    private List<Vertex> vertexList = null;
+    private List<String> animalList;
+
 
     public VertexViewModel(@NonNull Application application) {
         super(application);
@@ -51,5 +55,22 @@ public class VertexViewModel extends AndroidViewModel {
     public void toggleClicked(Vertex vertex, View view) {
         vertex.isSelected = !vertex.isSelected;
         vertexDao.update(vertex);
+    }
+
+
+    // Update
+    public void loadSeletectedVertice() {
+        vertexList = vertexDao.getSelectedExhibits(Vertex.Kind.EXHIBIT);
+    }
+
+    public List<String> getSelectedAnimalId() {
+        if (vertexList == null) {
+            loadSeletectedVertice();
+        }
+
+        List<Vertex> vList = vertexList;
+
+        List<String> res = vList.stream().map(Vertex::getId).collect(Collectors.toList());
+        return res;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.sandiegozooseeker.pathfinder;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +19,14 @@ public class Pathfinder {
     Map<String, ZooData.VertexInfo> vInfo;
     Map<String, ZooData.EdgeInfo> eInfo;
 
-    public Pathfinder(List<String> list) {
+    public Pathfinder(List<String> list, Context context) {
         exhibits = list;
         start = "entrance_exit_gate";
         end = start;
 
-        g = ZooData.loadZooGraphJSON("sample_zoo_graph.json");
-        vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json");
-        eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json");
+        g = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
+        vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
+        eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
 
     }
 
@@ -77,6 +79,20 @@ public class Pathfinder {
         }
 
         return info;
+    }
+
+
+    // Update
+    public GraphPath<String, IdentifiedWeightedEdge> getExactGraph(
+            List<GraphPath<String, IdentifiedWeightedEdge>> paths, String animal) {
+
+        GraphPath<String, IdentifiedWeightedEdge> match = null;
+        for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
+            if (vInfo.get(path.getEndVertex().toString()).name.equals(animal)) {
+                match = path;
+            }
+        }
+        return match;
     }
 
     // for testing do Log.d("name", "print this"); instead of system.out

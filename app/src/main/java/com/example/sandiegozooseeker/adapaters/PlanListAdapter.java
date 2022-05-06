@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
@@ -58,13 +59,20 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
+        private final CardView materialCardView;
         private final View view;
         private Vertex vertex;
+        private TextView distance;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.animal_name);
-            this.view = itemView.findViewById(R.id.plan_list_item_layout);
+            this.view = itemView.findViewById(R.id.plan_list_cell);
+            this.materialCardView = itemView.findViewById(R.id.materialCardView_plan);
+            this.distance = itemView.findViewById(R.id.distance_display);
+
+            String animalName = this.textView.getText().toString();
+
 
             view.setOnClickListener(view -> {
                 if (onClicked == null) return;
@@ -77,6 +85,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
             this.textView.setText(vertex.name);
+
         }
     }
 }
