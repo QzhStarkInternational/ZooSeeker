@@ -19,11 +19,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VertexViewModel extends AndroidViewModel {
     private LiveData<List<Vertex>> vertices = null;
     private LiveData<List<Vertex>> selectedVertices = null;
     private final VertexDao vertexDao;
+    private List<Vertex> vertexList = null;
+    private List<String> animalList;
+
 
     public VertexViewModel(@NonNull Application application) {
         super(application);
@@ -59,4 +63,19 @@ public class VertexViewModel extends AndroidViewModel {
         vertexDao.update(vertex);
     }
 
+    // Update
+    public void loadSeletectedVertice() {
+        vertexList = vertexDao.getSelectedExhibits(Vertex.Kind.EXHIBIT);
+    }
+
+    public List<String> getSelectedAnimalId() {
+        if (vertexList == null) {
+            loadSeletectedVertice();
+        }
+
+        List<Vertex> vList = vertexList;
+
+        List<String> res = vList.stream().map(Vertex::getId).collect(Collectors.toList());
+        return res;
+    }
 }

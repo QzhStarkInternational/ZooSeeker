@@ -1,5 +1,10 @@
 package com.example.sandiegozooseeker.pathfinder;
 
+import android.content.Context;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -38,8 +43,15 @@ public class ZooData {
         public String street;
     }
 
-    public static Map<String, ZooData.VertexInfo> loadVertexInfoJSON(String path) {
-        InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
+    public static Map<String, ZooData.VertexInfo> loadVertexInfoJSON(Context context, String path) {
+        //InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
+
+        InputStream inputStream = null;
+        try {
+            inputStream = context.getAssets().open(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Reader reader = new InputStreamReader(inputStream);
 
         Gson gson = new Gson();
@@ -58,8 +70,16 @@ public class ZooData {
                 .collect(Collectors.toMap(v -> v.id, datum -> datum));
     }
 
-    public static Map<String, ZooData.EdgeInfo> loadEdgeInfoJSON(String path) {
-        InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
+    public static Map<String, ZooData.EdgeInfo> loadEdgeInfoJSON(Context context, String path) {
+        //InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
+
+        InputStream inputStream = null;
+        try {
+            inputStream = context.getAssets().open(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Reader reader = new InputStreamReader(inputStream);
 
         Gson gson = new Gson();
@@ -71,7 +91,7 @@ public class ZooData {
                 .collect(Collectors.toMap(v -> v.id, datum -> datum));
     }
 
-    public static Graph<String, IdentifiedWeightedEdge> loadZooGraphJSON(String path) {
+    public static Graph<String, IdentifiedWeightedEdge> loadZooGraphJSON(Context context, String path) {
         // Create an empty graph to populate.
         Graph<String, IdentifiedWeightedEdge> g = new DefaultUndirectedWeightedGraph<>(IdentifiedWeightedEdge.class);
 
@@ -87,7 +107,12 @@ public class ZooData {
         importer.addEdgeAttributeConsumer(IdentifiedWeightedEdge::attributeConsumer);
 
         // On Android, you would use context.getAssets().open(path) here like in Lab 5.
-        InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
+        InputStream inputStream = null;
+        try {
+            inputStream = context.getAssets().open(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Reader reader = new InputStreamReader(inputStream);
 
         // And now we just import it!

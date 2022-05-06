@@ -59,6 +59,15 @@ public class Vertex {
     }
 
 
+    // Update
+    public String getName() {
+        return this.name;
+    }
+
+    @NonNull
+    public String getId() {
+        return id;
+    }
 
     @NonNull
     @Override
