@@ -150,18 +150,21 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             final List<Vertex> list = vertices;
 
             int count = list.size();
-            final ArrayList<Vertex> nlist = new ArrayList<Vertex>(count);
-
-            for (int i = 0; i < count; i++) {
-                for (String s : list.get(i).tags) {
-                    if (s.toLowerCase().contains(filterString) && !nlist.contains(list.get(i))) {
-                        nlist.add(list.get(i));
+            final ArrayList<Vertex> selected = new ArrayList<Vertex>(count);
+            if (filterString.isEmpty()) {
+                selected.addAll(vertices);
+            } else {
+                for (int i = 0; i < count; i++) {
+                    for (String s : list.get(i).tags) {
+                        if (s.toLowerCase().equals(filterString) && !selected.contains(list.get(i))) {
+                            selected.add(list.get(i));
+                        }
                     }
                 }
             }
 
-            results.values = nlist;
-            results.count = nlist.size();
+            results.values = selected;
+            results.count = selected.size();
 
             return results;
         }
