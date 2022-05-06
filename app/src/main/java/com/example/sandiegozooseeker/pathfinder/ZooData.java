@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.pathfinder;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -38,7 +39,7 @@ public class ZooData {
     }
 
     public static Map<String, ZooData.VertexInfo> loadVertexInfoJSON(String path) {
-        InputStream inputStream = Pathfinder.class.getClassLoader().getResourceAsStream(path);
+        InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
         Reader reader = new InputStreamReader(inputStream);
 
         Gson gson = new Gson();
@@ -52,26 +53,22 @@ public class ZooData {
 //             indexedZooData[datum.id] = datum;
 //         }
 
-        Map<String, ZooData.VertexInfo> indexedZooData = zooData
+        return zooData
                 .stream()
                 .collect(Collectors.toMap(v -> v.id, datum -> datum));
-
-        return indexedZooData;
     }
 
     public static Map<String, ZooData.EdgeInfo> loadEdgeInfoJSON(String path) {
-        InputStream inputStream = Pathfinder.class.getClassLoader().getResourceAsStream(path);
+        InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
         Reader reader = new InputStreamReader(inputStream);
 
         Gson gson = new Gson();
         Type type = new TypeToken<List<ZooData.EdgeInfo>>(){}.getType();
         List<ZooData.EdgeInfo> zooData = gson.fromJson(reader, type);
 
-        Map<String, ZooData.EdgeInfo> indexedZooData = zooData
+        return zooData
                 .stream()
                 .collect(Collectors.toMap(v -> v.id, datum -> datum));
-
-        return indexedZooData;
     }
 
     public static Graph<String, IdentifiedWeightedEdge> loadZooGraphJSON(String path) {
@@ -90,7 +87,7 @@ public class ZooData {
         importer.addEdgeAttributeConsumer(IdentifiedWeightedEdge::attributeConsumer);
 
         // On Android, you would use context.getAssets().open(path) here like in Lab 5.
-        InputStream inputStream = Pathfinder.class.getClassLoader().getResourceAsStream(path);
+        InputStream inputStream = Objects.requireNonNull(Pathfinder.class.getClassLoader()).getResourceAsStream(path);
         Reader reader = new InputStreamReader(inputStream);
 
         // And now we just import it!

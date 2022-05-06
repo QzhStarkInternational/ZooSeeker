@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.pathfinder;
 
 import java.util.ArrayList;
 import java.util.List;

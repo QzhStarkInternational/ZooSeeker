@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">San Diego ZooSeeker</string>
     <string name="logo_desc">San Diego Zoo Logo</string>
+    <string name="search_edit_text_hint">Search for Animals</string>
+    <string name="list_item_placeholder_animal_name">Animal Name</string>
+    <string name="animal_checked_cont_desc">Animal Checked</string>
+    <string name="search_tab_text">Search</string>
+    <string name="plan_tab_text">Plan</string>
+    <string name="navigate_tab_text">Navigate</string>
 </resources>

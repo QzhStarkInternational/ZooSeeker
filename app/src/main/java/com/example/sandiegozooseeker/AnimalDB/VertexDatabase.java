@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker;
+package com.example.sandiegozooseeker.AnimalDB;
 
 import android.content.Context;
 
@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -24,28 +23,24 @@ public abstract class VertexDatabase extends RoomDatabase {
         if (singleton == null) {
             singleton = VertexDatabase.makeDatabase(context);
         }
+
         return singleton;
     }
 
-    //populate the database with 'sample_node_info.json'
-    //add type converter -- omg finally fixed the app failing!
-    //should i create an empty database?
     private static VertexDatabase makeDatabase(Context context) {
         return Room.databaseBuilder(context, VertexDatabase.class, "vertex_animals.db")
                 .allowMainThreadQueries()
                 .addTypeConverter(new DataConverter())
                 .addCallback(new Callback() {
-                    @Override
+
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
-//                        Executors.newSingleThreadScheduledExecutor().execute(()-> {
-//                            List<Vertex> vertex = Vertex
-//                                    .loadJSON(context, "sample_node_info.json");
-//                            getSingleton(context).vertexDao().insertAll(vertex);
-//                        });
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+                            getSingleton(context).vertexDao().insertAll(vertices);
+                        });
                     }
-                })
-                .build();
+                }).build();
     }
 
     @VisibleForTesting
@@ -53,6 +48,7 @@ public abstract class VertexDatabase extends RoomDatabase {
         if (singleton != null) {
             singleton.close();
         }
+
         singleton = vertexDatabase;
     }
 }
