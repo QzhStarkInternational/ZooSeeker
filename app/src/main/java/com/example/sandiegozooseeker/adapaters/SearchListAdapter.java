@@ -151,7 +151,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
             int count = list.size();
             final ArrayList<Vertex> selected = new ArrayList<Vertex>(count);
-            if (filterString.isEmpty()) {
+            if (filterString.isEmpty() || filterString == null) {
                 selected.addAll(vertices);
             } else {
                 for (int i = 0; i < count; i++) {
