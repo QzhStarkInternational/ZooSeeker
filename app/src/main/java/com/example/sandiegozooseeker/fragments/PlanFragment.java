@@ -2,6 +2,8 @@ package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,8 +18,8 @@ import com.example.sandiegozooseeker.AnimalDB.VertexViewModel;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.adapaters.PlanListAdapter;
 import com.example.sandiegozooseeker.pathfinder.Pathfinder;
-
 import java.util.List;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class PlanFragment extends Fragment {
     public RecyclerView recyclerView;
@@ -37,6 +39,9 @@ public class PlanFragment extends Fragment {
 
         adapter = new PlanListAdapter();
         adapter.setHasStableIds(true);
+        adapter.setOnClickedHandler(viewModel::toggleClicked);
+
+        viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
         this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
 
