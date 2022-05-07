@@ -38,8 +38,6 @@ public class PlanFragment extends Fragment {
         adapter = new PlanListAdapter();
         adapter.setHasStableIds(true);
 
-        // Test it
-
         this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
 
         this.editButton = requireView().findViewById(R.id.edit_but);
@@ -54,30 +52,14 @@ public class PlanFragment extends Fragment {
             }
         });
 
-
-//        adapter.setOnClickedHandler(viewModel::toggleClicked);
-
-
         List<String> animal = viewModel.getSelectedAnimalId();
 
-        // Bug appear:
+        // List<id>
         List<String> copyAnimal = animal;
+        Pathfinder path = new Pathfinder(copyAnimal, this.getActivity().getApplicationContext());
+        path.plan();
 
-//        int loop = 0;
-//        try {
-//            loop += 1;
-        Pathfinder p = new Pathfinder(copyAnimal, getContext());
-//        } catch (Exception e) {
-//            Log.d("tag", loop + "");
-//        }
-        //Pathfinder p = new Pathfinder(copyAnimal);
 
-//        Log.d("tag", animal.size() + "");
-
-        if (this.editClicked) {
-        } else {
-
-        }
 
 
         viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
