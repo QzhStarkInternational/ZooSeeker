@@ -41,9 +41,9 @@ public class Pathfinder {
 
             for (String exhibit : tempExhibits) {
                 GraphPath<String, IdentifiedWeightedEdge> tempPath = DijkstraShortestPath.findPathBetween(g, start, exhibit);
-                if (pathDistance(tempPath) < minDistance) {
+                if ((int)tempPath.getWeight() < minDistance) {
                     minPath = tempPath;
-                    minDistance = pathDistance(minPath);
+                    minDistance = (int)minPath.getWeight();
                 }
             }
             paths.add(minPath);
@@ -59,22 +59,13 @@ public class Pathfinder {
         return paths;
     }
 
-    public int pathDistance(GraphPath<String, IdentifiedWeightedEdge> path) {
-        int distance = 0;
-        for (IdentifiedWeightedEdge e : path.getEdgeList()) {
-            distance += g.getEdgeWeight(e);
-        }
-
-        return distance;
-    }
-
     public List<String> pathsToStringList(List<GraphPath<String, IdentifiedWeightedEdge>> paths) {
 
         List<String> info = new ArrayList<String>();
         int totalDistance = 0;
 
         for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
-            int distance = pathDistance(path);
+            int distance = (int)path.getWeight();
             String name = vInfo.get(path.getEndVertex().toString()).name;
             totalDistance += distance;
             info.add(name + " " + totalDistance + "m");
