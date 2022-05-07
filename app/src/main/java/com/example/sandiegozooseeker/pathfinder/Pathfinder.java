@@ -49,6 +49,8 @@ public class Pathfinder {
             paths.add(minPath);
             start = minPath.getEndVertex();
             tempExhibits.remove(start);
+            minPath = null;
+            minDistance = Integer.MAX_VALUE;
         }
 
         GraphPath<String, IdentifiedWeightedEdge> exitPath = DijkstraShortestPath.findPathBetween(g, start, end);
