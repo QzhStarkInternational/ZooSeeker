@@ -1,6 +1,7 @@
 package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,11 +40,12 @@ public class PlanFragment extends Fragment {
 
         adapter = new PlanListAdapter();
         adapter.setHasStableIds(true);
-        adapter.setOnClickedHandler(viewModel::toggleClicked);
+        //adapter.setOnClickedHandler(viewModel::toggleClicked);
 
         viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
         this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
+
 
         this.editButton = requireView().findViewById(R.id.edit_but);
         this.editButton.setOnClickListener(view1 -> {
@@ -55,19 +57,26 @@ public class PlanFragment extends Fragment {
                 this.editButton.setText("EDIT");
                 adapter.setOnClickedHandler(null);
             }
+
         });
 
-        List<String> animal = viewModel.getSelectedAnimalId();
+//        requireView().findViewById(R.id.searchFragment).setOnClickListener((view2 -> {
+////                if (this.editClicked) {
+////                    this.editButton.setText("EDIT");
+////                    this.editClicked = !this.editClicked;
+////                    adapter.setOnClickedHandler(viewModel::toggleClicked);
+////                }
+//        }));
 
-        // List<id>
-        List<String> copyAnimal = animal;
-        Pathfinder path = new Pathfinder(copyAnimal, this.getActivity().getApplicationContext());
-        path.plan();
+//        List<String> animal = viewModel.getSelectedAnimalId();
+//
+//        // List<id>
+//        List<String> copyAnimal = animal;
+//        Pathfinder path = new Pathfinder(copyAnimal, this.getActivity().getApplicationContext());
+//        path.plan();
 
 
 
-
-        viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }
