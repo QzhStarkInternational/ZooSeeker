@@ -9,7 +9,7 @@
     <item
         android:id="@+id/pathFragment"
         android:enabled="true"
-        android:icon="@drawable/list_alt_checkable_48"
+        android:icon="@drawable/list_alt_fill1_wght400_grad0_opsz48"
         android:title="@string/plan_tab_text"/>
 
     <item
