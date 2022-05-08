@@ -3,6 +3,7 @@ package com.example.sandiegozooseeker.pathfinder;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,16 +86,19 @@ public class Pathfinder {
 
 
     // Update
-    public GraphPath<String, IdentifiedWeightedEdge> getExactGraph(
-            List<GraphPath<String, IdentifiedWeightedEdge>> paths, String animal) {
+    public HashMap<String, String> pathsToStringMap(List<GraphPath<String, IdentifiedWeightedEdge>> paths) {
 
-        GraphPath<String, IdentifiedWeightedEdge> match = null;
+        HashMap<String, String> info = new HashMap<>();
+        int totalDistance = 0;
+
         for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
-            if (vInfo.get(path.getEndVertex().toString()).name.equals(animal)) {
-                match = path;
-            }
+            int distance = pathDistance(path);
+            String name = vInfo.get(path.getEndVertex().toString()).name;
+            totalDistance += distance;
+            info.put(name, (name + " " + totalDistance + "m"));
         }
-        return match;
+
+        return info;
     }
 
     // for testing do Log.d("name", "print this"); instead of system.out

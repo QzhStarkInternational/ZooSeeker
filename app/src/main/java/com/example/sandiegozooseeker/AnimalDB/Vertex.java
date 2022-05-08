@@ -35,6 +35,7 @@ public class Vertex {
     public String name;
     public List<String> tags;
     public boolean isSelected;
+    public String distance;
 
     //2. Constructor matching fields above
     public Vertex(String id, Kind kind, String name, List<String> tags) {
@@ -43,6 +44,7 @@ public class Vertex {
         this.name = name;
         this.tags = tags;
         this.isSelected = false;
+        this.distance = "";
     }
 
     public static List<Vertex> loadJSON(Context context, String path) {
@@ -70,6 +72,14 @@ public class Vertex {
     }
 
     @NonNull
+    public void setDistance(String dis) {
+        this.distance = dis;
+    }
+
+    @NonNull
+    public String getDistance() { return this.distance; }
+
+    @NonNull
     @Override
     public String toString() {
         return "Vertex{" +
@@ -78,6 +88,7 @@ public class Vertex {
                 ", name='" + name + '\'' +
                 ", tags=" + tags +
                 ", isSelected=" + isSelected +
+                ", distance=" + distance +
                 '}';
     }
 }

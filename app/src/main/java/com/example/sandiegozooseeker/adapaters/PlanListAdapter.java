@@ -1,5 +1,6 @@
 package com.example.sandiegozooseeker.adapaters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,22 +11,48 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.example.sandiegozooseeker.AnimalDB.VertexViewModel;
 import com.example.sandiegozooseeker.R;
+import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
+import com.example.sandiegozooseeker.pathfinder.Pathfinder;
 
+import org.jgrapht.GraphPath;
+
+import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHolder>{
     private List<Vertex> vertices = Collections.emptyList();
     private BiConsumer<Vertex, View> onClicked;
+    private Context context;
+    private Map<String, String> distanceMapping;
+
+    public PlanListAdapter(Context context) {
+        this.context = context;
+    }
 
     public void setVertices(List<Vertex> newVertices) {
         this.vertices.clear();
+
+        VertexDao vertexDao = VertexDatabase.getSingleton(context).vertexDao();
+        List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
+
+        Pathfinder p = new Pathfinder(selectedExhibits, context);
+        List<GraphPath<String, IdentifiedWeightedEdge>> planList = p.plan();
+        distanceMapping = p.pathsToStringMap(planList);
+
         this.vertices = newVertices;
         notifyDataSetChanged();
-    }
 
+    }
 
     public void setOnClickedHandler(BiConsumer<Vertex, View> onClicked) {
         this.onClicked = onClicked;
@@ -62,17 +89,14 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         private final CardView materialCardView;
         private final View view;
         private Vertex vertex;
-        private TextView distance;
+        private TextView distance_display;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.animal_name);
             this.view = itemView.findViewById(R.id.plan_list_cell);
             this.materialCardView = itemView.findViewById(R.id.materialCardView_plan);
-            this.distance = itemView.findViewById(R.id.distance_display);
-
-            String animalName = this.textView.getText().toString();
-
+            this.distance_display = itemView.findViewById(R.id.distance_display);
 
             view.setOnClickListener(view -> {
                 if (onClicked == null) return;
@@ -85,6 +109,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
             this.textView.setText(vertex.name);
+            this.distance_display.setText(distanceMapping.get(vertex.getName()));
 
         }
     }

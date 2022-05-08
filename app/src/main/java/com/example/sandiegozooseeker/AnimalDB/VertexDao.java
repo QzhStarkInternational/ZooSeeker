@@ -42,6 +42,9 @@ public interface VertexDao {
     @Update
     public void update(Vertex vertex);
 
+    @Query("SELECT id FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
+    public List<String> getSelectedExhibitsID(Vertex.Kind kind);
+
     @Delete
     public int delete(Vertex vertex);
 }
