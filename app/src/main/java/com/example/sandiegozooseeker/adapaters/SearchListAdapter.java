@@ -48,6 +48,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         this.onClicked = onClicked;
     }
 
+
     @NonNull
     @Override
     public SearchListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -87,6 +88,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         private final int tinted;
         private Vertex vertex;
 
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.animalNameTextView = itemView.findViewById(R.id.animal_name);
@@ -94,6 +96,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             this.tagsChipGroup = itemView.findViewById(R.id.tag_chip_group);
             this.checkMarkImageView = itemView.findViewById(R.id.checkMarkImageView);
             this.context = itemView.getContext();
+
 
             View view1 = itemView.findViewById(R.id.search_list_item_layout);
 

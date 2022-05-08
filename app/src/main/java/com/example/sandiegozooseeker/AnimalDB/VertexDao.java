@@ -39,6 +39,15 @@ public interface VertexDao {
 //    @Query("SELECT * FROM `animal_vertex` WHERE CONTAINS(tags, :searchTerm)")
 //    public LiveData<List<Vertex>> getSearchedExhibits(String searchTerm);
 
+    @Query("SELECT id FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
+    public List<String> getSelectedExhibitsID(Vertex.Kind kind);
+
+    @Query("SELECT id FROM `animal_vertex` WHERE `kind`=:kind")
+    public List<String> getAllOfKindName(Vertex.Kind kind);
+
+    @Query("SELECT name FROM `animal_vertex` WHERE `id`=:id")
+    public String getAnimalName(String id);
+
     @Update
     public void update(Vertex vertex);
 
