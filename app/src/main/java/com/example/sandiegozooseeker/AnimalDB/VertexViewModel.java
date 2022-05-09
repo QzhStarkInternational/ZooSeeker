@@ -2,38 +2,38 @@ package com.example.sandiegozooseeker.AnimalDB;
 
 import android.app.Application;
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
-import com.example.sandiegozooseeker.AnimalDB.VertexDao;
-import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
-import com.google.android.material.textfield.TextInputEditText;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class VertexViewModel extends AndroidViewModel {
+    private final VertexDao vertexDao;
+
     private LiveData<List<Vertex>> vertices = null;
     private LiveData<List<Vertex>> selectedVertices = null;
-    private final VertexDao vertexDao;
-    private List<Vertex> vertexList = null;
-    private List<String> animalList;
+    private LiveData<Integer> vertexCount;
 
+    private List<Vertex> vertexList = null;
 
     public VertexViewModel(@NonNull Application application) {
         super(application);
         Context context = application.getApplicationContext();
         VertexDatabase db = VertexDatabase.getSingleton(context);
         vertexDao = db.vertexDao();
+    }
+
+    public LiveData<Integer> getVertexCount(){
+        if(vertexCount == null){
+            getExhibitSelectedCount();
+        }
+
+        return vertexCount;
     }
 
     public LiveData<List<Vertex>> getVertices() {
@@ -54,6 +54,7 @@ public class VertexViewModel extends AndroidViewModel {
     private void loadAnimals() {
         vertices = vertexDao.getAllOfKindLive(Vertex.Kind.EXHIBIT);
     }
+
     private void loadSelectedAnimals() {
         selectedVertices = vertexDao.getSelectedOfKindLive(Vertex.Kind.EXHIBIT);
     }
@@ -64,17 +65,20 @@ public class VertexViewModel extends AndroidViewModel {
     }
 
     // Update
-    public void loadSeletectedVertice() {
+    public void loadSelectedVertices() {
         vertexList = vertexDao.getSelectedExhibits(Vertex.Kind.EXHIBIT);
+    }
+
+    public void getExhibitSelectedCount() {
+        vertexCount = vertexDao.getSelectedExhibitsCount(Vertex.Kind.EXHIBIT);
     }
 
     public List<String> getSelectedAnimalId() {
         if (vertexList == null) {
-            loadSeletectedVertice();
+            loadSelectedVertices();
         }
 
         List<Vertex> vList = vertexList;
-
         List<String> res = vList.stream().map(Vertex::getId).collect(Collectors.toList());
         return res;
     }

@@ -71,7 +71,7 @@ public class DatabaseRemoveFragmentTest {
         onView(withId(R.id.vertex_items_search)).perform(RecyclerViewActions.actionOnItemAtPosition(2, click()));
 
         onView(withId(R.id.pathFragment)).perform(click());
-
+        onView(withId(R.id.edit_but)).perform(click());
         onView(withId(R.id.vertex_items_plan)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         onView(withId(R.id.vertex_items_plan)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
 

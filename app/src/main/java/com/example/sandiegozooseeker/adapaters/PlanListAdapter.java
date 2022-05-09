@@ -1,5 +1,6 @@
 package com.example.sandiegozooseeker.adapaters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +11,60 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 import com.example.sandiegozooseeker.R;
+import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
+import com.example.sandiegozooseeker.pathfinder.Pathfinder;
+
+import org.jgrapht.GraphPath;
+import org.w3c.dom.Text;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHolder>{
     private List<Vertex> vertices = Collections.emptyList();
     private BiConsumer<Vertex, View> onClicked;
+    private Context context;
+    private Map<String,Integer> distanceMapping;
 
+    public PlanListAdapter(Context context) {
+        this.context = context;
+    }
     public void setVertices(List<Vertex> newVertices) {
         this.vertices.clear();
+
+        //ordering the plan listview
+        //call the PathFinder class during the plan phase as you need to sort the plan list ordered by distance
+        VertexDao vertexDao = VertexDatabase.getSingleton(context).vertexDao();
+        List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
+
+        Pathfinder pf = new Pathfinder(selectedExhibits, context);
+
+        List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
+
+        //map with key-value pairs as vertex id and distance
+        distanceMapping = pf.getDistanceMapping(plan);
+        Collections.sort(newVertices, new Comparator<Vertex>() {
+            @Override
+            public int compare(final Vertex v1, final Vertex v2) {
+                Integer vertex1 = distanceMapping.get(v1.id);
+                Integer vertex2 = distanceMapping.get(v2.id);
+
+                if(vertex1 == null)
+                    return -1;
+                if(vertex2 == null)
+                    return 1;
+                return vertex1.compareTo(vertex2);
+            }
+        });
+
         this.vertices = newVertices;
+
         notifyDataSetChanged();
     }
 
@@ -36,7 +78,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
     public PlanListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.exhibit_plan_list_item, parent,false);
+                .inflate(R.layout.list_item_exhibit_plan, parent,false);
 
         return new PlanListAdapter.ViewHolder(view);
     }
@@ -85,7 +127,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
             this.textView.setText(vertex.name);
-
+            this.distance.setText(distanceMapping.get(vertex.id) != null ? distanceMapping.get(vertex.id).toString() + " m": "LOSSSS");
         }
     }
 }

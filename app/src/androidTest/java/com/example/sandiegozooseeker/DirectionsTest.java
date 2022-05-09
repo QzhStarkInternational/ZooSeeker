@@ -2,6 +2,7 @@ package com.example.sandiegozooseeker;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.example.sandiegozooseeker.pathfinder.Directions;
 import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
 import com.example.sandiegozooseeker.pathfinder.Pathfinder;
 
@@ -24,7 +25,8 @@ public class DirectionsTest {
         List<GraphPath<String, IdentifiedWeightedEdge>> paths = pf.plan();
         Directions dir = new Directions(paths, ApplicationProvider.getApplicationContext());
         List<String> correctDirections = new ArrayList<String>();
-        correctDirections.add("1. Walk 10.0 meters along Entrance Way from Entrance and Exit Gate to Entrance Plaza.\n");
+        correctDirections
+                .add("1. Walk 10.0 meters along Entrance Way from Entrance and Exit Gate to Entrance Plaza.\n");
         correctDirections.add("2. Walk 100.0 meters along Reptile Road from Entrance Plaza to Alligators.\n");
         assertEquals(correctDirections, dir.getDirectionsOneAnimal());
         assertEquals("Gorillas, 300.0m", dir.nextLabel());
@@ -34,7 +36,8 @@ public class DirectionsTest {
         assertEquals(correctDirections, dir.getDirectionsOneAnimal());
         dir.getDirectionsOneAnimal();
         List<String> directions = dir.getDirectionsOneAnimal();
-        assertEquals("4. Walk 10.0 meters along Entrance Way from Entrance Plaza to Entrance and Exit Gate.\n", directions.get(directions.size()-1));
-        assertEquals(new ArrayList<String>(),dir.getDirectionsOneAnimal());
+        assertEquals("4. Walk 10.0 meters along Entrance Way from Entrance Plaza to Entrance and Exit Gate.\n",
+                directions.get(directions.size() - 1));
+        assertEquals(new ArrayList<String>(), dir.getDirectionsOneAnimal());
     }
 }

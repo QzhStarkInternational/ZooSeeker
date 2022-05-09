@@ -3,8 +3,10 @@ package com.example.sandiegozooseeker.pathfinder;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -89,5 +91,19 @@ public class Pathfinder {
     }
 
     // for testing do Log.d("name", "print this"); instead of system.out
-}
 
+    //this is a map to associate the animal exhibit with the calculated distance for sorting the plan list and displaying the distance
+    public Map<String,Integer> getDistanceMapping(List<GraphPath<String, IdentifiedWeightedEdge>> paths) {
+        Map<String, Integer> distanceMapping = new HashMap();
+        int totalDistance = 0;
+
+        for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
+            int distance = (int)path.getWeight();
+            String id = Objects.requireNonNull(vInfo.get(path.getEndVertex())).id;
+            totalDistance += distance;
+            distanceMapping.put(id,totalDistance);
+        }
+        return distanceMapping;
+    }
+    // for testing do Log.d("name", "print this"); instead of system.out
+}
