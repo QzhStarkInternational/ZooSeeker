@@ -2,6 +2,7 @@ package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
 import android.text.Layout;
+
 import android.util.Log;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,6 +40,8 @@ public class PlanFragment extends Fragment {
                 .get(VertexViewModel.class);
 
         adapter = new PlanListAdapter(getActivity());
+
+        adapter = new PlanListAdapter();
         adapter.setHasStableIds(true);
         //adapter.setOnClickedHandler(viewModel::toggleClicked);
 
@@ -46,6 +49,9 @@ public class PlanFragment extends Fragment {
 
         this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
 
+        // Test it
+
+        this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
 
         this.editButton = requireView().findViewById(R.id.edit_but);
         this.editButton.setOnClickListener(view1 -> {
@@ -77,6 +83,36 @@ public class PlanFragment extends Fragment {
 
 
 
+
+        });
+
+
+//        adapter.setOnClickedHandler(viewModel::toggleClicked);
+
+
+        List<String> animal = viewModel.getSelectedAnimalId();
+
+        // Bug appear:
+        List<String> copyAnimal = animal;
+
+//        int loop = 0;
+//        try {
+//            loop += 1;
+        Pathfinder p = new Pathfinder(copyAnimal, getContext());
+//        } catch (Exception e) {
+//            Log.d("tag", loop + "");
+//        }
+        //Pathfinder p = new Pathfinder(copyAnimal);
+
+//        Log.d("tag", animal.size() + "");
+
+        if (this.editClicked) {
+        } else {
+
+        }
+
+
+        viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }

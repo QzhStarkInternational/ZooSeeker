@@ -28,4 +28,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <Button
+        android:id="@+id/done_but"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/BurlyWood"
+
+        android:text="DONE"
+        android:visibility="invisible"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+        android:layout_width="409dp"
+        android:layout_height="729dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
