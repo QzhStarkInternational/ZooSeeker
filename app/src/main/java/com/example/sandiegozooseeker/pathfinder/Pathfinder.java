@@ -91,20 +91,6 @@ public class Pathfinder {
     }
 
     // for testing do Log.d("name", "print this"); instead of system.out
-}
-
-    // Update
-    public GraphPath<String, IdentifiedWeightedEdge> getExactGraph(
-            List<GraphPath<String, IdentifiedWeightedEdge>> paths, String animal) {
-
-        GraphPath<String, IdentifiedWeightedEdge> match = null;
-        for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
-            if (vInfo.get(path.getEndVertex().toString()).name.equals(animal)) {
-                match = path;
-            }
-        }
-        return match;
-    }
 
     //this is a map to associate the animal exhibit with the calculated distance for sorting the plan list and displaying the distance
     public Map<String,Integer> getDistanceMapping(List<GraphPath<String, IdentifiedWeightedEdge>> paths) {

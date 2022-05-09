@@ -62,25 +62,6 @@ public class ZooData {
             e.printStackTrace();
             return Collections.emptyMap();
         }
-
-        InputStream inputStream = null;
-        try {
-            inputStream = context.getAssets().open(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Reader reader = new InputStreamReader(inputStream);
-
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<ZooData.VertexInfo>>(){}.getType();
-        List<ZooData.VertexInfo> zooData = gson.fromJson(reader, type);
-
-//         This code is equivalent to:
-//
-//         Map<String, ZooData.VertexInfo> indexedZooData = new HashMap();
-//         for (ZooData.VertexInfo datum : zooData) {
-//             indexedZooData[datum.id] = datum;
-//         }
     }
 
     public static Map<String, ZooData.EdgeInfo> loadEdgeInfoJSON(Context context, String path) {
@@ -99,24 +80,6 @@ public class ZooData {
             e.printStackTrace();
             return Collections.emptyMap();
         }
-
-
-        InputStream inputStream = null;
-        try {
-            inputStream = context.getAssets().open(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Reader reader = new InputStreamReader(inputStream);
-
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<ZooData.EdgeInfo>>(){}.getType();
-        List<ZooData.EdgeInfo> zooData = gson.fromJson(reader, type);
-
-        return zooData
-                .stream()
-                .collect(Collectors.toMap(v -> v.id, datum -> datum));
     }
 
     public static Graph<String, IdentifiedWeightedEdge> loadZooGraphJSON(Context context, String path) {
@@ -147,17 +110,5 @@ public class ZooData {
             Graph<String, IdentifiedWeightedEdge> a = null;
             return a;
         }
-        InputStream inputStream = null;
-        try {
-            inputStream = context.getAssets().open(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Reader reader = new InputStreamReader(inputStream);
-
-        // And now we just import it!
-        importer.importGraph(g, reader);
-
-        return g;
     }
 }

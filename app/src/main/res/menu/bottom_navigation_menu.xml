@@ -7,7 +7,7 @@
         android:title="@string/search_tab_text" />
 
     <item
-        android:id="@+id/pathFragment"
+        android:id="@+id/planFragment"
         android:enabled="true"
         android:icon="@drawable/list_alt_checkable_48"
         android:title="@string/plan_tab_text"/>

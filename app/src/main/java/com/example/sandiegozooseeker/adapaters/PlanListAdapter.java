@@ -52,10 +52,19 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         Collections.sort(newVertices, new Comparator<Vertex>() {
             @Override
             public int compare(final Vertex v1, final Vertex v2) {
-                return distanceMapping.get(v1.id).compareTo(distanceMapping.get(v2.id));
+                Integer vertex1 = distanceMapping.get(v1.id);
+                Integer vertex2 = distanceMapping.get(v2.id);
+
+                if(vertex1 == null)
+                    return -1;
+                if(vertex2 == null)
+                    return 1;
+                return vertex1.compareTo(vertex2);
             }
         });
+
         this.vertices = newVertices;
+
         notifyDataSetChanged();
     }
 
@@ -69,7 +78,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
     public PlanListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.exhibit_plan_list_item, parent,false);
+                .inflate(R.layout.list_item_exhibit_plan, parent,false);
 
         return new PlanListAdapter.ViewHolder(view);
     }
@@ -118,7 +127,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
             this.textView.setText(vertex.name);
-            this.distance.setText(distanceMapping.get(vertex.id).toString() + " m");
+            this.distance.setText(distanceMapping.get(vertex.id) != null ? distanceMapping.get(vertex.id).toString() + " m": "LOSSSS");
         }
     }
 }

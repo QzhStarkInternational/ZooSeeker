@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuView;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,7 +55,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     public SearchListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.exhibit_search_list_item,parent,false);
+                .inflate(R.layout.list_item_exhibit_search,parent,false);
 
         return new SearchListAdapter.ViewHolder(view);
     }
@@ -123,7 +124,6 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
                 Chip chip = new Chip(context);
                 chip.setText(tag);
                 chip.setClickable(false);
-                chip.setBackgroundColor(transparent);
                 chip.setRippleColorResource(R.color.transparent);
                 tagsChipGroup.addView(chip);
             }
@@ -138,6 +138,8 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             }
         }
     }
+
+    // Search Filter
     public Filter getFilter() {
         return filter;
     }
@@ -154,13 +156,17 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
             int count = list.size();
             final ArrayList<Vertex> selected = new ArrayList<Vertex>(count);
-            if (filterString.isEmpty() || filterString == null) {
+            if (filterString.isEmpty()) {
                 selected.addAll(vertices);
             } else {
                 for (int i = 0; i < count; i++) {
-                    for (String s : list.get(i).tags) {
-                        if (s.toLowerCase().equals(filterString) && !selected.contains(list.get(i))) {
-                            selected.add(list.get(i));
+                    if(list.get(i).getName().toLowerCase().contains(filterString)){
+                        selected.add(list.get(i));
+                    } else {
+                        for (String s : list.get(i).tags) {
+                            if (s.toLowerCase().contains(filterString)) {
+                                selected.add(list.get(i));
+                            }
                         }
                     }
                 }
@@ -172,7 +178,6 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             return results;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filteredVertices = (ArrayList<Vertex>) results.values;
@@ -180,5 +185,4 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         }
 
     }
-
 }

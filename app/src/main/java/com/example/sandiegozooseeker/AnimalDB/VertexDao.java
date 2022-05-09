@@ -21,14 +21,8 @@ public interface VertexDao {
     @Query("SELECT * FROM `animal_vertex` WHERE `id`=:id")
     public Vertex get(String id);
 
-    @Query("SELECT * FROM `animal_vertex`")
-    public List<Vertex> getAll();
-
     @Query("SELECT * FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
     public List<Vertex> getSelectedExhibits(Vertex.Kind kind);
-
-    @Query("SELECT * FROM `animal_vertex` WHERE `kind`=:kind")
-    public List<Vertex> getAllOfKind(Vertex.Kind kind);
 
     @Query("SELECT * FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
     public LiveData<List<Vertex>> getSelectedOfKindLive(Vertex.Kind kind);
@@ -36,14 +30,11 @@ public interface VertexDao {
     @Query("SELECT * FROM `animal_vertex` WHERE `kind`=:kind")
     public LiveData<List<Vertex>> getAllOfKindLive(Vertex.Kind kind);
 
-//    @Query("SELECT * FROM `animal_vertex` WHERE CONTAINS(tags, :searchTerm)")
-//    public LiveData<List<Vertex>> getSearchedExhibits(String searchTerm);
-
     @Query("SELECT id FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
     public List<String> getSelectedExhibitsID(Vertex.Kind kind);
 
-    @Query("SELECT id FROM `animal_vertex` WHERE `kind`=:kind")
-    public List<String> getAllOfKindName(Vertex.Kind kind);
+    @Query("SELECT COUNT(ID) FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
+    public LiveData<Integer> getSelectedExhibitsCount(Vertex.Kind kind);
 
     @Query("SELECT name FROM `animal_vertex` WHERE `id`=:id")
     public String getAnimalName(String id);

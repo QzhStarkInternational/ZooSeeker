@@ -22,13 +22,20 @@ import com.google.android.material.textfield.TextInputEditText;
 public class SearchFragment extends Fragment {
 
     public RecyclerView recyclerView;
-
+    public TextInputEditText searchText;
     public SearchFragment() {
-        super(R.layout.search_fragment);
+        super(R.layout.fragment_search);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+
+        searchText = view.findViewById(R.id.searchBarTextInputEditText);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         VertexViewModel viewModel = new ViewModelProvider(requireActivity())
                 .get(VertexViewModel.class);
 
@@ -37,9 +44,12 @@ public class SearchFragment extends Fragment {
         adapter.setOnClickedHandler(viewModel::toggleClicked);
         viewModel.getVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
-        TextView numberText = view.findViewById(R.id.numberText);
-        numberText.setText("Number of Selected Animals: " + viewModel.getExhibitSelectedCount());
-        TextInputEditText searchText = view.findViewById(R.id.textInputEditText);
+
+        recyclerView = requireActivity().findViewById(R.id.vertex_items_search);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
+        recyclerView.setAdapter(adapter);
+
+
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -55,9 +65,5 @@ public class SearchFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
             }
         });
-
-        recyclerView = requireActivity().findViewById(R.id.vertex_items_search);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        recyclerView.setAdapter(adapter);
     }
 }

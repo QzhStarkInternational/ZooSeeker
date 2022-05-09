@@ -34,7 +34,7 @@ public class NavigateFragment extends Fragment {
     private VertexDao vertexDao;
 
     public NavigateFragment(){
-        super(R.layout.navigate_fragment);
+        super(R.layout.fragment_navigate);
     }
 
     //keep track of which animal exhibit direction to display
@@ -51,7 +51,7 @@ public class NavigateFragment extends Fragment {
 
         List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
         List<String> orderedPaths = pf.pathsToStringList(plan);
-       // System.out.println(orderedPaths);
+        // System.out.println(orderedPaths);
 
         directionText = (TextView)view.findViewById(R.id.direction_text);
         animalText = (TextView) view.findViewById(R.id.animal_name);

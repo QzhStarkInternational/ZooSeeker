@@ -30,28 +30,29 @@ public class PlanFragment extends Fragment {
     private boolean editClicked = false;
 
     public PlanFragment() {
-        super(R.layout.plan_fragment);
+        super(R.layout.fragment_plan);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
         VertexViewModel viewModel = new ViewModelProvider(requireActivity())
                 .get(VertexViewModel.class);
 
         adapter = new PlanListAdapter(getActivity());
-
-        adapter = new PlanListAdapter();
         adapter.setHasStableIds(true);
-        //adapter.setOnClickedHandler(viewModel::toggleClicked);
-
         viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
 
         this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
-
-        // Test it
-
-        this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
 
         this.editButton = requireView().findViewById(R.id.edit_but);
         this.editButton.setOnClickListener(view1 -> {
@@ -66,54 +67,9 @@ public class PlanFragment extends Fragment {
 
         });
 
-//        requireView().findViewById(R.id.searchFragment).setOnClickListener((view2 -> {
-////                if (this.editClicked) {
-////                    this.editButton.setText("EDIT");
-////                    this.editClicked = !this.editClicked;
-////                    adapter.setOnClickedHandler(viewModel::toggleClicked);
-////                }
-//        }));
-
-//        List<String> animal = viewModel.getSelectedAnimalId();
-//
-//        // List<id>
-//        List<String> copyAnimal = animal;
-//        Pathfinder path = new Pathfinder(copyAnimal, this.getActivity().getApplicationContext());
-//        path.plan();
-
-
-
-
-        });
-
-
-//        adapter.setOnClickedHandler(viewModel::toggleClicked);
-
-
         List<String> animal = viewModel.getSelectedAnimalId();
-
-        // Bug appear:
-        List<String> copyAnimal = animal;
-
-//        int loop = 0;
-//        try {
-//            loop += 1;
-        Pathfinder p = new Pathfinder(copyAnimal, getContext());
-//        } catch (Exception e) {
-//            Log.d("tag", loop + "");
-//        }
-        //Pathfinder p = new Pathfinder(copyAnimal);
-
-//        Log.d("tag", animal.size() + "");
-
-        if (this.editClicked) {
-        } else {
-
-        }
+        Pathfinder p = new Pathfinder(animal, getContext());
 
 
-        viewModel.getSelectedVertices().observe(getViewLifecycleOwner(), adapter::setVertices);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
     }
 }
