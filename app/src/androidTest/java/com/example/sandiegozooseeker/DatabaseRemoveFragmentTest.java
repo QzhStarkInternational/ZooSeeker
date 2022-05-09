@@ -7,7 +7,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.Lifecycle;
@@ -16,8 +15,8 @@ import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.runner.AndroidJUnit4;
 
 import com.example.sandiegozooseeker.AnimalDB.DataConverter;
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
@@ -70,7 +69,7 @@ public class DatabaseRemoveFragmentTest {
         onView(withId(R.id.vertex_items_search)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         onView(withId(R.id.vertex_items_search)).perform(RecyclerViewActions.actionOnItemAtPosition(2, click()));
 
-        onView(withId(R.id.pathFragment)).perform(click());
+        onView(withId(R.id.planFragment)).perform(click());
         onView(withId(R.id.edit_but)).perform(click());
         onView(withId(R.id.vertex_items_plan)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         onView(withId(R.id.vertex_items_plan)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));

@@ -29,7 +29,7 @@ public class DirectionsTest {
                 .add("1. Walk 10.0 meters along Entrance Way from Entrance and Exit Gate to Entrance Plaza.\n");
         correctDirections.add("2. Walk 100.0 meters along Reptile Road from Entrance Plaza to Alligators.\n");
         assertEquals(correctDirections, dir.getDirectionsOneAnimal());
-        assertEquals("Gorillas, 300.0m", dir.nextLabel(0));
+        assertEquals("300.0m", dir.nextLabel(0));
         correctDirections.clear();
         correctDirections.add("1. Walk 100.0 meters along Reptile Road from Alligators to Entrance Plaza.\n");
         correctDirections.add("2. Walk 200.0 meters along Africa Rocks Street from Entrance Plaza to Gorillas.\n");
