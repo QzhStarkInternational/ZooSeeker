@@ -59,12 +59,12 @@ public class Directions {
     }
 
     //get text for the next button
-    public String nextLabel(){
-        if (animal >= paths.size()) {
-            return "BULLSHIT";
+    public String nextLabel(int index){
+        if (index +1 >= paths.size()) {
+            return "";
         }
 
-        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(index+1);
         return vInfo.get(path.getEndVertex().toString()).name + ", " + path.getWeight() + "m";
     }
 

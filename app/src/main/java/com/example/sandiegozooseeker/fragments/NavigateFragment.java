@@ -64,7 +64,7 @@ public class NavigateFragment extends Fragment {
         //display directions to first exhibit
         updateDirections();
         nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
-        nextAnimalDistanceTextView.setText(dir.nextLabel());
+        nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
 
         nextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +84,7 @@ public class NavigateFragment extends Fragment {
             nextView.setVisibility(View.GONE);
         } else {
             nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
-            nextAnimalDistanceTextView.setText(dir.nextLabel());
+            nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
         }
     }
 }
