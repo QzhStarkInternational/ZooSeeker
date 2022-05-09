@@ -65,8 +65,9 @@ public class Directions {
         }
 
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(index+1);
-        return vInfo.get(path.getEndVertex().toString()).name + ", " + path.getWeight() + "m";
+        return path.getWeight() + "m";
     }
+
 
     //helper method to retrive all the directions for all selected exhibits
     public List<String> getDirectionsAllAnimals() {
