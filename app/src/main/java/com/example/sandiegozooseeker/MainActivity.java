@@ -27,6 +27,19 @@ public class MainActivity extends AppCompatActivity {
         assert navHostFragment != null;
         NavController navController = navHostFragment.getNavController();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+<<<<<<< Updated upstream
+=======
+
+        BadgeDrawable badge = bottomNavigationView.getOrCreateBadge(R.id.planFragment);
+        badge.isVisible();
+
+        final Observer<Integer> nameObserver = new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable final Integer count) {
+                badge.setNumber(count != null ? count : 0);
+            }
+        };
+>>>>>>> Stashed changes
 
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
