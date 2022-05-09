@@ -2,7 +2,6 @@ package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
 import android.text.Layout;
-
 import android.util.Log;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -53,6 +52,7 @@ public class PlanFragment extends Fragment {
         this.recyclerView = requireView().findViewById(R.id.vertex_items_plan);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
 
         this.editButton = requireView().findViewById(R.id.edit_but);
         this.editButton.setOnClickListener(view1 -> {

@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker.pathfinder;
+package com.example.sandiegozooseeker;
 
 import android.content.Context;
 
@@ -20,7 +20,7 @@ public class Directions {
     Graph<String, IdentifiedWeightedEdge> g;
     Map<String, ZooData.VertexInfo> vInfo;
     Map<String, ZooData.EdgeInfo> eInfo;
-    List<String> orderedList;
+
     //constructor needs the List of GraphPaths created from PathFinder's plan() method
     public Directions(List<GraphPath<String, IdentifiedWeightedEdge>> p, Context context) {
         paths = p;
@@ -59,48 +59,8 @@ public class Directions {
     }
 
     //get text for the next button
-    public String nextLabel(int index){
-        if (index +1 >= paths.size()) {
-            return "";
-        }
-
-        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(index+1);
-        return path.getWeight() + "m";
-    }
-
-
-    //helper method to retrive all the directions for all selected exhibits
-    public List<String> getDirectionsAllAnimals() {
-        //reset index
-        animal = 0;
-        List<String> directions = new ArrayList<String>();
-        orderedList = new ArrayList<>();
-        //if the method is called after going through every animal in the plan, an empty list is returned
-        for (int x=0; x<paths.size(); x++) {
-            String s = "";
-            GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
-            orderedList.add(path.getEndVertex());
-            int i = 1;
-            List<String> vertices = path.getVertexList();
-            int vertex = 0;
-            for (IdentifiedWeightedEdge e : path.getEdgeList()) {
-                double weight = g.getEdgeWeight(e);
-                String street = eInfo.get(e.getId()).street;
-                String source = vInfo.get(vertices.get(vertex).toString()).name;
-                vertex++;
-                String target = vInfo.get(vertices.get(vertex).toString()).name;
-                s += i + ". Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n";
-                i++;
-            }
-            directions.add(s);
-            animal++;
-        }
-        //System.out.println(directions);
-        return directions;
-    }
-
-    //return ordered list
-    public List<String> getOrderedList() {
-        return orderedList;
+    public String nextLabel(){
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
+        return vInfo.get(path.getEndVertex().toString()).name + ", " + path.getWeight() + "m";
     }
 }

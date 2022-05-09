@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavController navController = Objects.requireNonNull(navHostFragment).getNavController();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
         BadgeDrawable badge = bottomNavigationView.getOrCreateBadge(R.id.planFragment);
         badge.isVisible();
 
