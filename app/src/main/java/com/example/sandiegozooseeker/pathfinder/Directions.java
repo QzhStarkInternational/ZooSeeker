@@ -60,6 +60,10 @@ public class Directions {
 
     //get text for the next button
     public String nextLabel(){
+        if (animal >= paths.size()) {
+            return "BULLSHIT";
+        }
+
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
         return vInfo.get(path.getEndVertex().toString()).name + ", " + path.getWeight() + "m";
     }
