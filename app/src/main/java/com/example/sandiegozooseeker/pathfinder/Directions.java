@@ -59,10 +59,15 @@ public class Directions {
     }
 
     //get text for the next button
-    public String nextLabel(){
-        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
-        return vInfo.get(path.getEndVertex().toString()).name + ", " + path.getWeight() + "m";
+    public String nextLabel(int index){
+        if (index +1 >= paths.size()) {
+            return "";
+        }
+
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(index+1);
+        return path.getWeight() + "m";
     }
+
 
     //helper method to retrive all the directions for all selected exhibits
     public List<String> getDirectionsAllAnimals() {
