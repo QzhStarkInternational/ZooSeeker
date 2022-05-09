@@ -63,8 +63,14 @@ public class NavigateFragment extends Fragment {
         orderedList = dir.getOrderedList();
         //display directions to first exhibit
         updateDirections();
-        nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
-        nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
+
+        if(orderedList.size() < 2){
+            nextView.setVisibility(View.GONE);
+        } else {
+            nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
+            nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
+        }
+
 
         nextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,13 +84,20 @@ public class NavigateFragment extends Fragment {
     //update question method
     private void updateDirections() {
         String direction = directions.get(mCurrentIndex);
-        animalText.setText("Directions to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)));
-        directionText.setText(direction);
-        if (mCurrentIndex == directions.size() - 1) {
-            nextView.setVisibility(View.GONE);
+
+        if(orderedList.size() < 2) {
+            animalText.setText("");
+            directionText.setText("");
         } else {
-            nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
-            nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
+            animalText.setText("Directions to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)));
+            directionText.setText(direction);
+            if (mCurrentIndex == directions.size() - 1) {
+                nextView.setVisibility(View.GONE);
+            } else {
+                nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
+                nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
+            }
         }
+
     }
 }
