@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.example.sandiegozooseeker.Prompt;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.pathfinder.Directions;
 import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
@@ -103,9 +104,17 @@ public class NavigateFragment extends Fragment {
                     orderedList = dir.getOrderedList();
                 }
                 //mCurrentIndex = (mCurrentIndex+1) % directions.size();
+                openDialog();
+
                 updateDirections();
+
             }
         });
+    }
+
+    private void openDialog() {
+        Prompt prompt = new Prompt();
+        prompt.show(getActivity().getSupportFragmentManager(), "what is this");
     }
 
     //update question method
