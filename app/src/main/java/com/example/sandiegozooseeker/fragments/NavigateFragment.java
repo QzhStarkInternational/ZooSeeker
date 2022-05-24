@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,9 +44,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
@@ -54,6 +57,7 @@ import org.jgrapht.GraphPath;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class NavigateFragment extends Fragment {
     private CardView nextView;
@@ -65,19 +69,33 @@ public class NavigateFragment extends Fragment {
     private List<String> orderedList;
     private VertexDao vertexDao;
     private LocationRequest locationRequest;
+    private CancellationTokenSource taskCancellationSource;
 
     private FusedLocationProviderClient fusedLocationClient;
-    //private TextView locView;
-    private final ActivityResultLauncher<String[]> requestPermissionLauncher
-        = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
-        perms.forEach((perm, isGranted) -> {
-            Log.i("LAB7", String.format("Permission %s granted: %s", perm, isGranted));
-        });
-    });
+    private TextView locView;
+
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+        registerForActivityResult(new ActivityResultContracts
+                .RequestMultiplePermissions(), result -> {
+                Boolean fineLocationGranted = result.getOrDefault(
+                    Manifest.permission.ACCESS_FINE_LOCATION, false);
+                Boolean coarseLocationGranted = result.getOrDefault(
+                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                if (fineLocationGranted != null && fineLocationGranted) {
+                    // Precise location access granted.
+                } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                    // Only approximate location access granted.
+                } else {
+                    // No location access granted.
+                }
+            }
+        );
+
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     Directions dir;
 
-    public NavigateFragment(){
+    public NavigateFragment() {
         super(R.layout.fragment_navigate);
     }
 
@@ -97,20 +115,21 @@ public class NavigateFragment extends Fragment {
         List<String> orderedPaths = pf.pathsToStringList(plan);
         // System.out.println(orderedPaths);
 
-        directionText = (TextView)view.findViewById(R.id.direction_text);
+        directionText = (TextView) view.findViewById(R.id.direction_text);
         animalText = (TextView) view.findViewById(R.id.animal_name);
         nextView = view.findViewById(R.id.nextView);
         nextAnimalNameTextView = view.findViewById(R.id.textView2);
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
+        locView = view.findViewById(R.id.textView3);
 
         //set up directions and update heading (animal name)
-        dir = new Directions(plan,getActivity());
+        dir = new Directions(plan, getActivity());
         directions = dir.getDirectionsAllAnimals();
         orderedList = dir.getOrderedList();
         //display directions to first exhibit
         updateDirections();
 
-        if(orderedList.size() < 2){
+        if (orderedList.size() < 2) {
             nextView.setVisibility(View.GONE);
         } else {
             nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
@@ -121,7 +140,7 @@ public class NavigateFragment extends Fragment {
         nextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentIndex = (mCurrentIndex+1) % directions.size();
+                mCurrentIndex = (mCurrentIndex + 1) % directions.size();
                 updateDirections();
             }
         });
@@ -148,11 +167,86 @@ public class NavigateFragment extends Fragment {
         // Get user current location
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         CancellationTokenSource cts = new CancellationTokenSource();
-        Location currentLocation = fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, cts.getToken()).getResult();
-        currentLocation.getLatitude();
-        currentLocation.getLongitude();
+        CancellationToken ct = cts.getToken();
 
-        //
+        String provider = LocationManager.GPS_PROVIDER;
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder
+            = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(getActivity());
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+                try {
+                    LocationSettingsResponse response = task.getResult(ApiException.class);
+                    Toast.makeText(getActivity(), "GPS is already tured on", Toast.LENGTH_SHORT).show();
+                } catch (ApiException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        task.addOnFailureListener(getActivity(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(getActivity(),
+                            REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
+
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+
+            }
+        };
+        locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
+
+        fusedLocationClient.getLastLocation()
+            .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        // Logic to handle location object
+                        double lat = location.getLatitude();
+                        double lng = location.getLongitude();
+                        Log.d("loc", lat + ", " + lng);
+
+                        locView.setText(lat + ", " + lng);
+                    }
+                    else {
+                        locView.setText("Fail to access location");
+                    }
+
+                }
+            });
+
 
 
 
