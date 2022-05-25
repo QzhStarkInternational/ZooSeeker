@@ -2,6 +2,10 @@ package com.example.sandiegozooseeker.pathfinder;
 
 import android.content.Context;
 
+import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +18,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 public class Pathfinder {
 
+    private final VertexDao vertexDao;
     List<String> exhibits;
     String start;
     String end;
@@ -26,10 +31,19 @@ public class Pathfinder {
         start = currentExhibit;
         end = "entrance_exit_gate";
 
-        g = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
-        vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
-        eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
+        g = ZooData.loadZooGraphJSON(context, "zoo_graph.json");
+        vInfo = ZooData.loadVertexInfoJSON(context, "zoo_node_info.json");
+        eInfo = ZooData.loadEdgeInfoJSON(context, "zoo_edge_info.json");
+        VertexDatabase db = VertexDatabase.getSingleton(context);
+        vertexDao = db.vertexDao();
+    }
 
+    public Vertex getVertexId(int i){
+        return vertexDao.get(vInfo.get(i).id);
+    }
+
+    public int getvertexNums(){
+        return vInfo.size();
     }
 
     public List<GraphPath<String, IdentifiedWeightedEdge>> plan(){

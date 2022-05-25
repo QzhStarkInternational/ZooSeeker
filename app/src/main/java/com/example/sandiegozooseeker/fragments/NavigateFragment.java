@@ -1,28 +1,23 @@
 package com.example.sandiegozooseeker.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
+import android.location.LocationRequest;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -32,32 +27,18 @@ import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.pathfinder.Directions;
 import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
-import com.example.sandiegozooseeker.pathfinder.LoadLocation;
 import com.example.sandiegozooseeker.pathfinder.Pathfinder;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.CancellationTokenSource;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.OnTokenCanceledListener;
-import com.google.android.gms.tasks.Task;
 
 import org.jgrapht.GraphPath;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public class NavigateFragment extends Fragment {
     private CardView nextView;
@@ -72,7 +53,6 @@ public class NavigateFragment extends Fragment {
     private CancellationTokenSource taskCancellationSource;
 
     private FusedLocationProviderClient fusedLocationClient;
-    private TextView locView;
 
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
         registerForActivityResult(new ActivityResultContracts
@@ -95,11 +75,12 @@ public class NavigateFragment extends Fragment {
 
     private Button skipButton;
     Directions dir;
+    Pathfinder pf;
+    List<String> selectedExhibits;
 
     public NavigateFragment() {
         super(R.layout.fragment_navigate);
     }
-    public NavigateFragment(){ super(R.layout.fragment_navigate); }
 
     //keep track of which animal exhibit direction to display
     private int mCurrentIndex = 0;
@@ -107,33 +88,31 @@ public class NavigateFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-
         vertexDao = VertexDatabase.getSingleton(getActivity()).vertexDao();
-        List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
+        selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
         //System.out.println(selectedExhibits);
-        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
+        pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
 
         List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
         List<String> orderedPaths = pf.pathsToStringList(plan);
         // System.out.println(orderedPaths);
 
-        directionText = (TextView) view.findViewById(R.id.direction_text);
+        directionText = (TextView)view.findViewById(R.id.direction_text);
         animalText = (TextView) view.findViewById(R.id.animal_name);
         nextView = view.findViewById(R.id.nextView);
         nextAnimalNameTextView = view.findViewById(R.id.textView2);
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
-        locView = view.findViewById(R.id.textView3);
 
         //skip button
         skipButton = (Button)view.findViewById(R.id.skipButton);
         //set up directions and update heading (animal name)
-        dir = new Directions(plan, getActivity());
+        dir = new Directions(plan,getActivity());
         directions = dir.getDirectionsAllAnimals();
         orderedList = dir.getOrderedList();
         //display directions to first exhibit
         updateDirections();
 
-        if (orderedList.size() < 2) {
+        if(orderedList.size() < 2){
             nextView.setVisibility(View.GONE);
         } else {
             nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
@@ -144,8 +123,9 @@ public class NavigateFragment extends Fragment {
         nextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentIndex = (mCurrentIndex + 1) % directions.size();
+                mCurrentIndex = (mCurrentIndex+1) % directions.size();
                 updateDirections();
+                checkLoc();
             }
         });
 
@@ -161,11 +141,12 @@ public class NavigateFragment extends Fragment {
                     vertexDao.update(vertexToChange);
                     //replanning
                     List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
-                    Pathfinder pf = new Pathfinder(selectedExhibits, getActivity());
+                    pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
                     List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
                     dir = new Directions(plan, getActivity());
                     directions = dir.getDirectionsAllAnimals();
                     orderedList = dir.getOrderedList();
+                    checkLoc();
                 }
                 //mCurrentIndex = (mCurrentIndex+1) % directions.size();
                 openDialog();
@@ -174,12 +155,82 @@ public class NavigateFragment extends Fragment {
 
             }
         });
+
+        // Check permission
+        checkLoc();
     }
 
-    private void openDialog() {
-        Prompt prompt = new Prompt();
-        prompt.show(getActivity().getSupportFragmentManager(), "what is this");
+    private void checkLoc(){
+        {
+            String[] requiredPermissions = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+
+            boolean hasNoLocationPerms = Arrays.stream(requiredPermissions)
+                    .map(perm -> ContextCompat.checkSelfPermission(requireActivity(), perm))
+                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
+
+            if (hasNoLocationPerms) {
+                requestPermissionLauncher.launch(requiredPermissions);
+                return;
+            }
+
+        }
+
+        // Get user current location
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.getToken();
+
+        String provider = LocationManager.GPS_PROVIDER;
+        LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+        fusedLocationClient.getCurrentLocation(100, ct)
+                .addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            Vertex currentVertex = dir.getCurrentVertex(mCurrentIndex);
+
+                            if (currentVertex.getLat() != currentLocation.latitude && currentVertex.getLng() != currentLocation.longitude) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                                builder.setPositiveButton("Replan", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        int maxIndex = pf.getvertexNums();
+
+                                        for(int i = 0; i < maxIndex; i++){
+                                            Vertex currentV = pf.getVertexId(i);
+                                            if(currentV.getLat() == currentLocation.latitude && currentV.getLng() == currentLocation.longitude){
+                                                pf = new Pathfinder(selectedExhibits, getActivity(), currentV.id);
+                                                List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
+                                                dir = new Directions(plan, getActivity());
+                                                directions = dir.getDirectionsAllAnimals();
+                                                orderedList = dir.getOrderedList();
+                                                updateDirections();
+                                            }
+                                        }
+                                    }
+                                });
+                                builder.setMessage("Did you take the wrong turn?").setTitle("Oops");
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        }
+                    }
+                });
     }
+
+
+    private void openDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setMessage("").setTitle("Replanning");
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
 
     //update question method
     private void updateDirections() {
