@@ -31,9 +31,7 @@ public class NavigateFragment extends Fragment {
     private VertexDao vertexDao;
     Directions dir;
 
-    public NavigateFragment(){
-        super(R.layout.fragment_navigate);
-    }
+    public NavigateFragment(){ super(R.layout.fragment_navigate); }
 
     //keep track of which animal exhibit direction to display
     private int mCurrentIndex = 0;
@@ -45,7 +43,7 @@ public class NavigateFragment extends Fragment {
         vertexDao = VertexDatabase.getSingleton(getActivity()).vertexDao();
         List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
         //System.out.println(selectedExhibits);
-        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity());
+        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
 
         List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
         List<String> orderedPaths = pf.pathsToStringList(plan);
