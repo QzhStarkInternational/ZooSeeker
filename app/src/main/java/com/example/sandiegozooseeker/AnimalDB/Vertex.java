@@ -35,14 +35,18 @@ public class Vertex {
     public String name;
     public List<String> tags;
     public boolean isSelected;
+    public double lat;
+    public double lng;
 
     //2. Constructor matching fields above
-    public Vertex(String id, Kind kind, String name, List<String> tags) {
+    public Vertex(String id, Kind kind, String name, List<String> tags, double lat, double lng) {
         this.id = id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
         this.isSelected = false;
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public static List<Vertex> loadJSON(Context context, String path) {
@@ -68,6 +72,12 @@ public class Vertex {
     public String getId() {
         return id;
     }
+
+    @NonNull
+    public double getLat() { return this.lat; }
+
+    @NonNull
+    public double getLng() { return this.lng; }
 
     @NonNull
     @Override

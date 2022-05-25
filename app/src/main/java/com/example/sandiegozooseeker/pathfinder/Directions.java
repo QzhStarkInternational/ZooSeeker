@@ -3,6 +3,9 @@ package com.example.sandiegozooseeker.pathfinder;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.AnimalDB.VertexDao;
+import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
 import com.example.sandiegozooseeker.pathfinder.ZooData;
 
@@ -22,13 +25,25 @@ public class Directions {
     Map<String, ZooData.VertexInfo> vInfo;
     Map<String, ZooData.EdgeInfo> eInfo;
     List<String> orderedList;
+    private VertexDao vertexDao;
+
     //constructor needs the List of GraphPaths created from PathFinder's plan() method
     public Directions(List<GraphPath<String, IdentifiedWeightedEdge>> p, Context context) {
         paths = p;
         animal = 0; //edit to keep track of last visited animal
-        g = ZooData.loadZooGraphJSON(context,"sample_zoo_graph.json");
-        vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
-        eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
+        g = ZooData.loadZooGraphJSON(context,"zoo_graph.json");
+        vInfo = ZooData.loadVertexInfoJSON(context, "zoo_node_info.json");
+        eInfo = ZooData.loadEdgeInfoJSON(context, "zoo_edge_info.json");
+
+        VertexDatabase db = VertexDatabase.getSingleton(context);
+        vertexDao = db.vertexDao();
+    }
+
+    public Vertex getCurrentVertex(int index){
+        String id = orderedList.get(index);
+
+
+        return vertexDao.get(id);
     }
 
     //gives a list of Strings that are step-by-step directions to go to the next animal in the path
