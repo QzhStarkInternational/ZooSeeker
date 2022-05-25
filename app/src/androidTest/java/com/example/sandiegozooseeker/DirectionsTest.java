@@ -21,7 +21,7 @@ public class DirectionsTest {
         exhibits.add("gorillas");
         exhibits.add("gators");
         exhibits.add("elephant_odyssey");
-        Pathfinder pf = new Pathfinder(exhibits, ApplicationProvider.getApplicationContext());
+        Pathfinder pf = new Pathfinder(exhibits, ApplicationProvider.getApplicationContext(), "entrance_exit_gate");
         List<GraphPath<String, IdentifiedWeightedEdge>> paths = pf.plan();
         Directions dir = new Directions(paths, ApplicationProvider.getApplicationContext());
         List<String> correctDirections = new ArrayList<String>();
@@ -39,5 +39,9 @@ public class DirectionsTest {
         assertEquals("4. Walk 10.0 meters along Entrance Way from Entrance Plaza to Entrance and Exit Gate.\n",
                 directions.get(directions.size() - 1));
         assertEquals(new ArrayList<String>(), dir.getDirectionsOneAnimal());
+        assertEquals("" , dir.getPrevious(0));
+        assertEquals("1. Walk 100.0 meters along Reptile Road from Alligators to Entrance Plaza.\n" +
+                        "2. Walk 10.0 meters along Entrance Way from Entrance Plaza to Entrance and Exit Gate.\n"
+                , dir.getPrevious(1));
     }
 }
