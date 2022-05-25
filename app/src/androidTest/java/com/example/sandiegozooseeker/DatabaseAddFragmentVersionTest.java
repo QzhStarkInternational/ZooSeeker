@@ -33,9 +33,9 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import com.example.sandiegozooseeker.AnimalDB.DataConverter;
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
@@ -77,15 +77,6 @@ public class DatabaseAddFragmentVersionTest {
         vertexDao.insertAll(vertices);
     }
 
-//    @Rule
-//    public ActivityTestRule<MainActivity> activityActivityTestRule = new ActivityTestRule<MainActivity>(MainActivity.class);
-//
-//    @Before
-//    public void init(){
-//        activityActivityTestRule.getActivity()
-//                .getSupportFragmentManager().beginTransaction();
-//    }
-
     @Test
     public void databaseAddFragmentVersionTest() {
         ActivityScenario<MainActivity> scenario
@@ -101,7 +92,7 @@ public class DatabaseAddFragmentVersionTest {
         onView(withId(R.id.vertex_items_search)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         onView(withId(R.id.vertex_items_search)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
 
-        onView(withId(R.id.pathFragment)).perform(click());
+        onView(withId(R.id.planFragment)).perform(click());
 
         List<Vertex> populatedDb = vertexDao.getSelectedExhibits(Vertex.Kind.EXHIBIT);
         assertEquals(2, populatedDb.size());
@@ -121,7 +112,7 @@ public class DatabaseAddFragmentVersionTest {
         });
 
         //should have 4 mammal exhibits
-        onView(withId(R.id.textInputEditText)).perform(clearText(),typeText("mammal"));
+        onView(withId(R.id.searchBarTextInputEditText)).perform(clearText(),typeText("mammal"));
 
     }
 }

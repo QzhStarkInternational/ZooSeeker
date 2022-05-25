@@ -25,7 +25,7 @@ public class PathfinderTest {
         exhibits.add("gorillas");
         exhibits.add("gators");
         exhibits.add("elephant_odyssey");
-        Pathfinder pf = new Pathfinder(exhibits, ApplicationProvider.getApplicationContext());
+        Pathfinder pf = new Pathfinder(exhibits, ApplicationProvider.getApplicationContext(), "entrance_exit_gate");
         List<GraphPath<String, IdentifiedWeightedEdge>> paths = pf.plan();
         List<String> pathsToString = pf.pathsToStringList(paths);
         List<String> correctPaths = new ArrayList<String>();

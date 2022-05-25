@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sandiegozooseeker">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Allow our app to request the user's Location. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

@@ -93,11 +93,13 @@ public class NavigateFragment extends Fragment {
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
+    private Button skipButton;
     Directions dir;
 
     public NavigateFragment() {
         super(R.layout.fragment_navigate);
     }
+    public NavigateFragment(){ super(R.layout.fragment_navigate); }
 
     //keep track of which animal exhibit direction to display
     private int mCurrentIndex = 0;
@@ -109,7 +111,7 @@ public class NavigateFragment extends Fragment {
         vertexDao = VertexDatabase.getSingleton(getActivity()).vertexDao();
         List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
         //System.out.println(selectedExhibits);
-        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity());
+        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
 
         List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
         List<String> orderedPaths = pf.pathsToStringList(plan);
@@ -122,6 +124,8 @@ public class NavigateFragment extends Fragment {
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
         locView = view.findViewById(R.id.textView3);
 
+        //skip button
+        skipButton = (Button)view.findViewById(R.id.skipButton);
         //set up directions and update heading (animal name)
         dir = new Directions(plan, getActivity());
         directions = dir.getDirectionsAllAnimals();
@@ -145,115 +149,36 @@ public class NavigateFragment extends Fragment {
             }
         });
 
-
-        // Check permission
-        {
-            String[] requiredPermissions = new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            };
-
-            boolean hasNoLocationPerms = Arrays.stream(requiredPermissions)
-                .map(perm -> ContextCompat.checkSelfPermission(getActivity(), perm))
-                .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
-
-            if (hasNoLocationPerms) {
-                requestPermissionLauncher.launch(requiredPermissions);
-                return;
-            }
-
-        }
-
-        // Get user current location
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.getToken();
-
-        String provider = LocationManager.GPS_PROVIDER;
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationSettingsRequest.Builder builder
-            = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
-
-        SettingsClient client = LocationServices.getSettingsClient(getActivity());
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-
-        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+        skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                // All location settings are satisfied. The client can initialize
-                // location requests here.
-                // ...
-                try {
-                    LocationSettingsResponse response = task.getResult(ApiException.class);
-                    Toast.makeText(getActivity(), "GPS is already tured on", Toast.LENGTH_SHORT).show();
-                } catch (ApiException e) {
-                    e.printStackTrace();
+            public void onClick(View view) {
+                //completely remove exhibit and replan (everything from current index onwards)
+                //update orderedlist and deselect isSelected
+                if (((mCurrentIndex+1) % directions.size()) != 0) {
+                    Vertex vertexToChange = vertexDao.get(orderedList.get(mCurrentIndex + 1));
+                    System.out.println(vertexToChange);
+                    vertexToChange.isSelected = !vertexToChange.isSelected;
+                    vertexDao.update(vertexToChange);
+                    //replanning
+                    List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
+                    Pathfinder pf = new Pathfinder(selectedExhibits, getActivity());
+                    List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
+                    dir = new Directions(plan, getActivity());
+                    directions = dir.getDirectionsAllAnimals();
+                    orderedList = dir.getOrderedList();
                 }
+                //mCurrentIndex = (mCurrentIndex+1) % directions.size();
+                openDialog();
+
+                updateDirections();
 
             }
         });
+    }
 
-        task.addOnFailureListener(getActivity(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(getActivity(),
-                            REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
-                }
-            }
-        });
-
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
-
-            }
-        };
-        locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
-
-        fusedLocationClient.getLastLocation()
-            .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        // Logic to handle location object
-                        double lat = location.getLatitude();
-                        double lng = location.getLongitude();
-                        Log.d("loc", lat + ", " + lng);
-
-                        locView.setText(lat + ", " + lng);
-                    }
-                    else {
-                        locView.setText("Fail to access location");
-                    }
-
-                }
-            });
-
-
-
-
-
-
-
-
+    private void openDialog() {
+        Prompt prompt = new Prompt();
+        prompt.show(getActivity().getSupportFragmentManager(), "what is this");
     }
 
     //update question method
@@ -266,6 +191,9 @@ public class NavigateFragment extends Fragment {
         } else {
             animalText.setText("Directions to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)));
             directionText.setText(direction);
+            if (mCurrentIndex == directions.size() - 2) {
+                skipButton.setVisibility(View.GONE);
+            }
             if (mCurrentIndex == directions.size() - 1) {
                 nextView.setVisibility(View.GONE);
             } else {
@@ -275,6 +203,4 @@ public class NavigateFragment extends Fragment {
         }
 
     }
-
-
 }
