@@ -41,9 +41,7 @@ public class NavigateFragment extends Fragment {
     private String start;
     Directions dir;
 
-    public NavigateFragment(){
-        super(R.layout.fragment_navigate);
-    }
+    public NavigateFragment(){ super(R.layout.fragment_navigate); }
 
     //keep track of which animal exhibit direction to display
     private int mCurrentIndex = 0;

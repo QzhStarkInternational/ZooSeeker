@@ -25,7 +25,7 @@ public class Directions {
     //constructor needs the List of GraphPaths created from PathFinder's plan() method
     public Directions(List<GraphPath<String, IdentifiedWeightedEdge>> p, Context context) {
         paths = p;
-        animal = 0;
+        animal = 0; //edit to keep track of last visited animal
         g = ZooData.loadZooGraphJSON(context,"sample_zoo_graph.json");
         vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
         eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
@@ -76,12 +76,10 @@ public class Directions {
         animal = 0;
         List<String> directions = new ArrayList<String>();
         orderedList = new ArrayList<>();
-        //orderedList.add("entrance_exit_gate");
         //if the method is called after going through every animal in the plan, an empty list is returned
         for (int x=0; x<paths.size(); x++) {
             String s = "";
             GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
-            //Log.d("GET_END_VERTEX", "getDirectionsAllAnimals: " + path.getEndVertex());
             orderedList.add(path.getEndVertex());
             int i = 1;
             List<String> vertices = path.getVertexList();
@@ -130,4 +128,5 @@ public class Directions {
 
         return previousDirections;
     }
+
 }

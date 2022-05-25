@@ -39,5 +39,9 @@ public class DirectionsTest {
         assertEquals("4. Walk 10.0 meters along Entrance Way from Entrance Plaza to Entrance and Exit Gate.\n",
                 directions.get(directions.size() - 1));
         assertEquals(new ArrayList<String>(), dir.getDirectionsOneAnimal());
+        assertEquals("" , dir.getPrevious(0));
+        assertEquals("1. Walk 100.0 meters along Reptile Road from Alligators to Entrance Plaza.\n" +
+                        "2. Walk 10.0 meters along Entrance Way from Entrance Plaza to Entrance and Exit Gate.\n"
+                , dir.getPrevious(1));
     }
 }
