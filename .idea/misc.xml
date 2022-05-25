@@ -39,10 +39,12 @@
         <entry key="..\:/Users/bibas/AndroidStudioProjects/SanDiegoZooSeeker/app/src/main/res/layout/street_distance_name_list.xml" value="0.23229166666666667" />
         <entry key="..\:/Users/bibas/AndroidStudioProjects/SanDiegoZooSeeker/app/src/main/res/layout/vertex_list_item.xml" value="0.23229166666666667" />
         <entry key="..\:/Users/bibas/AndroidStudioProjects/SanDiegoZooSeeker/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/fragment_navigate.xml" value="0.2546875" />
+        <entry key="..\:/Users/nwong/AndroidStudioProjects/zooseeker-cse-110-team-42/app/src/main/res/layout/list_item_exhibit_search.xml" value="0.2546875" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_16_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
