@@ -50,8 +50,8 @@ public class VertexDatabaseTest {
     public void testInsert() {
         List<String> tag1 = new ArrayList<>(Arrays.asList("rabbit","mammal"));
         List<String> tag2 = new ArrayList<>(Arrays.asList("wolves","mammal"));
-        Vertex v1 = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tag1);
-        Vertex v2 = new Vertex("wolf habitat", Vertex.Kind.EXHIBIT,"Wolves", tag2);
+        Vertex v1 = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tag1, 31.2, 32.2);
+        Vertex v2 = new Vertex("wolf habitat", Vertex.Kind.EXHIBIT,"Wolves", tag2, 30.0, 35.2);
 
         dao.insert(v1);
         dao.insert(v2);
@@ -63,7 +63,7 @@ public class VertexDatabaseTest {
     @Test
     public void testGet() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
-        Vertex insertedAnimal = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tags);
+        Vertex insertedAnimal = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tags, 31.2, 32.2);
         dao.insert(insertedAnimal);
 
         Vertex vertex = dao.get("rabbit habitat");
@@ -76,7 +76,7 @@ public class VertexDatabaseTest {
     @Test
     public void testDelete() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
-        Vertex vertex = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tags);
+        Vertex vertex = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tags, 31.2, 32.2);
         dao.insert(vertex);
 
         vertex = dao.get("rabbit habitat");
