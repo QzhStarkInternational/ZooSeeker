@@ -26,9 +26,9 @@ public class Pathfinder {
         start = "entrance_exit_gate";
         end = start;
 
-        g = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
-        vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
-        eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
+        g = ZooData.loadZooGraphJSON(context, "zoo_graph.json");
+        vInfo = ZooData.loadVertexInfoJSON(context, "exhibit_info.json");
+        eInfo = ZooData.loadEdgeInfoJSON(context, "trail_info.json");
 
     }
 

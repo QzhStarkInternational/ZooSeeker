@@ -36,7 +36,7 @@ public abstract class VertexDatabase extends RoomDatabase {
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
                         Executors.newSingleThreadExecutor().execute(() -> {
-                            List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+                            List<Vertex> vertices = Vertex.loadJSON(context, "exhibit_info.json");
                             getSingleton(context).vertexDao().insertAll(vertices);
                         });
                     }

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.example.sandiegozooseeker.AnimalDB.Vertex;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -31,13 +32,17 @@ public class ZooData {
             // from the strings in our JSON to this Enum.
             @SerializedName("gate") GATE,
             @SerializedName("exhibit") EXHIBIT,
-            @SerializedName("intersection") INTERSECTION
+            @SerializedName("intersection") INTERSECTION,
+            @SerializedName("exhibit_group") EXHIBIT_GROUP
         }
 
         public String id;
-        public Kind kind;
+        public String group_id;
+        public Vertex.Kind kind;
         public String name;
         public List<String> tags;
+        public float lat;
+        public float lng;
     }
 
     public static class EdgeInfo {

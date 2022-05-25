@@ -23,7 +23,8 @@ public class Vertex {
     public enum Kind {
         @SerializedName("gate") GATE,
         @SerializedName("exhibit") EXHIBIT,
-        @SerializedName("intersection") INTERSECTION
+        @SerializedName("intersection") INTERSECTION,
+        @SerializedName("exhibit_group") EXHIBIT_GROUP
     }
 
     //contains a unique id
@@ -31,17 +32,23 @@ public class Vertex {
     @NonNull
     @PrimaryKey
     public String id;
+    public String group_id;
     public Kind kind;
     public String name;
     public List<String> tags;
+    public float lat;
+    public float lng;
     public boolean isSelected;
 
     //2. Constructor matching fields above
-    public Vertex(String id, Kind kind, String name, List<String> tags) {
+    public Vertex(String id, String group_id, Kind kind, String name, List<String> tags, float lat, float lng) {
         this.id = id;
+        this.group_id = group_id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
+        this.lat = lat;
+        this.lng = lng;
         this.isSelected = false;
     }
 
@@ -70,13 +77,26 @@ public class Vertex {
     }
 
     @NonNull
+    public String getGroupId() {return group_id; }
+
+    @NonNull
+    public float getLat() { return this.lat; }
+
+    @NonNull
+    public float getLng() { return this.lng; }
+
+    @NonNull
+
     @Override
     public String toString() {
         return "Vertex{" +
                 "id='" + id + '\'' +
+                ", group_id='" + group_id + '\'' +
                 ", kind=" + kind +
                 ", name='" + name + '\'' +
                 ", tags=" + tags +
+                ", lat=" + lat +
+                ", lng=" + lng +
                 ", isSelected=" + isSelected +
                 '}';
     }

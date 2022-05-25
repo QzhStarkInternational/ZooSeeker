@@ -25,9 +25,9 @@ public class Directions {
     public Directions(List<GraphPath<String, IdentifiedWeightedEdge>> p, Context context) {
         paths = p;
         animal = 0;
-        g = ZooData.loadZooGraphJSON(context,"sample_zoo_graph.json");
-        vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
-        eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
+        g = ZooData.loadZooGraphJSON(context,"zoo_graph.json");
+        vInfo = ZooData.loadVertexInfoJSON(context, "exhibit_info.json");
+        eInfo = ZooData.loadEdgeInfoJSON(context, "trail_info.json");
     }
 
     //gives a list of Strings that are step-by-step directions to go to the next animal in the path
