@@ -43,7 +43,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         VertexDao vertexDao = VertexDatabase.getSingleton(context).vertexDao();
         List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
 
-        Pathfinder pf = new Pathfinder(selectedExhibits, context);
+        Pathfinder pf = new Pathfinder(selectedExhibits, context, "entrance_exit_gate");
 
         List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
 

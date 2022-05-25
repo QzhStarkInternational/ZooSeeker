@@ -1,6 +1,7 @@
 package com.example.sandiegozooseeker.pathfinder;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
 import com.example.sandiegozooseeker.pathfinder.ZooData;
@@ -75,10 +76,12 @@ public class Directions {
         animal = 0;
         List<String> directions = new ArrayList<String>();
         orderedList = new ArrayList<>();
+        //orderedList.add("entrance_exit_gate");
         //if the method is called after going through every animal in the plan, an empty list is returned
         for (int x=0; x<paths.size(); x++) {
             String s = "";
             GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animal);
+            //Log.d("GET_END_VERTEX", "getDirectionsAllAnimals: " + path.getEndVertex());
             orderedList.add(path.getEndVertex());
             int i = 1;
             List<String> vertices = path.getVertexList();
@@ -102,5 +105,29 @@ public class Directions {
     //return ordered list
     public List<String> getOrderedList() {
         return orderedList;
+    }
+
+    //Directions back to the previous exhibit, give input of current exhibit
+    public String getPrevious(int currentAnimal) {
+        String previousDirections = "";
+
+        if (currentAnimal < 1) {
+            return previousDirections;
+        }
+
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(currentAnimal -1);
+        List<String> vertices = path.getVertexList();
+        int vertex = vertices.size() -1;
+        for (int i = 0; i < path.getLength(); i++) {
+            IdentifiedWeightedEdge e = path.getEdgeList().get(path.getLength() -1 - i);
+            double weight = g.getEdgeWeight(e);
+            String street = eInfo.get(e.getId()).street;
+            String source = vInfo.get(vertices.get(vertex).toString()).name;
+            vertex--;
+            String target = vInfo.get(vertices.get(vertex).toString()).name;
+            previousDirections += (i+1) + ". Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n";
+        }
+
+        return previousDirections;
     }
 }

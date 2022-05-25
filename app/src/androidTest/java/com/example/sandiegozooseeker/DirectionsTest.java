@@ -21,7 +21,7 @@ public class DirectionsTest {
         exhibits.add("gorillas");
         exhibits.add("gators");
         exhibits.add("elephant_odyssey");
-        Pathfinder pf = new Pathfinder(exhibits, ApplicationProvider.getApplicationContext());
+        Pathfinder pf = new Pathfinder(exhibits, ApplicationProvider.getApplicationContext(), "entrance_exit_gate");
         List<GraphPath<String, IdentifiedWeightedEdge>> paths = pf.plan();
         Directions dir = new Directions(paths, ApplicationProvider.getApplicationContext());
         List<String> correctDirections = new ArrayList<String>();
