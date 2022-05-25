@@ -160,12 +160,14 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
                 selected.addAll(vertices);
             } else {
                 for (int i = 0; i < count; i++) {
-                    if(list.get(i).getName().toLowerCase().contains(filterString)){
-                        selected.add(list.get(i));
-                    } else {
-                        for (String s : list.get(i).tags) {
-                            if (s.toLowerCase().contains(filterString)) {
-                                selected.add(list.get(i));
+                    if(!selected.contains(list.get(i))){
+                        if(list.get(i).getName().toLowerCase().contains(filterString)){
+                            selected.add(list.get(i));
+                        } else {
+                            for (String s : list.get(i).tags) {
+                                if (s.toLowerCase().contains(filterString)) {
+                                    selected.add(list.get(i));
+                                }
                             }
                         }
                     }
