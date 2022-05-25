@@ -69,7 +69,7 @@ public class Directions {
     }
 
 
-    //helper method to retrive all the directions for all selected exhibits
+    //helper method to retrieve all the directions for all selected exhibits
     public List<String> getDirectionsAllAnimals() {
         //reset index
         animal = 0;
