@@ -24,7 +24,7 @@ public class Directions {
     //constructor needs the List of GraphPaths created from PathFinder's plan() method
     public Directions(List<GraphPath<String, IdentifiedWeightedEdge>> p, Context context) {
         paths = p;
-        animal = 0;
+        animal = 0; //edit to keep track of last visited animal
         g = ZooData.loadZooGraphJSON(context,"sample_zoo_graph.json");
         vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
         eInfo = ZooData.loadEdgeInfoJSON(context, "sample_edge_info.json");
@@ -103,4 +103,29 @@ public class Directions {
     public List<String> getOrderedList() {
         return orderedList;
     }
+
+    //Directions back to the previous exhibit, give input of current exhibit
+    public String getPrevious(int currentAnimal) {
+        String previousDirections = "";
+
+        if (currentAnimal < 1) {
+            return previousDirections;
+        }
+
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(currentAnimal -1);
+        List<String> vertices = path.getVertexList();
+        int vertex = vertices.size() -1;
+        for (int i = 0; i < path.getLength(); i++) {
+            IdentifiedWeightedEdge e = path.getEdgeList().get(path.getLength() -1 - i);
+            double weight = g.getEdgeWeight(e);
+            String street = eInfo.get(e.getId()).street;
+            String source = vInfo.get(vertices.get(vertex).toString()).name;
+            vertex--;
+            String target = vInfo.get(vertices.get(vertex).toString()).name;
+            previousDirections += (i+1) + ". Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n";
+        }
+
+        return previousDirections;
+    }
+
 }
