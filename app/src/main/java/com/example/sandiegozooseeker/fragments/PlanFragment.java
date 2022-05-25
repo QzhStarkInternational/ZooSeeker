@@ -68,7 +68,7 @@ public class PlanFragment extends Fragment {
         });
 
         List<String> animal = viewModel.getSelectedAnimalId();
-        Pathfinder p = new Pathfinder(animal, getContext());
+        Pathfinder p = new Pathfinder(animal, getContext(), "entrance_exit_gate");
 
 
     }

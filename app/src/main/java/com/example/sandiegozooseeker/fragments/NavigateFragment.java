@@ -2,6 +2,7 @@ package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.example.sandiegozooseeker.AnimalDB.Vertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.example.sandiegozooseeker.Prompt;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.pathfinder.Directions;
 import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
@@ -29,11 +31,10 @@ public class NavigateFragment extends Fragment {
     private List<String> directions;
     private List<String> orderedList;
     private VertexDao vertexDao;
+    private Button skipButton;
     Directions dir;
 
-    public NavigateFragment(){
-        super(R.layout.fragment_navigate);
-    }
+    public NavigateFragment(){ super(R.layout.fragment_navigate); }
 
     //keep track of which animal exhibit direction to display
     private int mCurrentIndex = 0;
@@ -45,7 +46,7 @@ public class NavigateFragment extends Fragment {
         vertexDao = VertexDatabase.getSingleton(getActivity()).vertexDao();
         List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
         //System.out.println(selectedExhibits);
-        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity());
+        Pathfinder pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
 
         List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
         List<String> orderedPaths = pf.pathsToStringList(plan);
@@ -57,6 +58,8 @@ public class NavigateFragment extends Fragment {
         nextAnimalNameTextView = view.findViewById(R.id.textView2);
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
 
+        //skip button
+        skipButton = (Button)view.findViewById(R.id.skipButton);
         //set up directions and update heading (animal name)
         dir = new Directions(plan,getActivity());
         directions = dir.getDirectionsAllAnimals();
@@ -79,6 +82,37 @@ public class NavigateFragment extends Fragment {
                 updateDirections();
             }
         });
+
+        skipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //completely remove exhibit and replan (everything from current index onwards)
+                //update orderedlist and deselect isSelected
+                if (((mCurrentIndex+1) % directions.size()) != 0) {
+                    Vertex vertexToChange = vertexDao.get(orderedList.get(mCurrentIndex + 1));
+                    System.out.println(vertexToChange);
+                    vertexToChange.isSelected = !vertexToChange.isSelected;
+                    vertexDao.update(vertexToChange);
+                    //replanning
+                    List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
+                    Pathfinder pf = new Pathfinder(selectedExhibits, getActivity());
+                    List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
+                    dir = new Directions(plan, getActivity());
+                    directions = dir.getDirectionsAllAnimals();
+                    orderedList = dir.getOrderedList();
+                }
+                //mCurrentIndex = (mCurrentIndex+1) % directions.size();
+                openDialog();
+
+                updateDirections();
+
+            }
+        });
+    }
+
+    private void openDialog() {
+        Prompt prompt = new Prompt();
+        prompt.show(getActivity().getSupportFragmentManager(), "what is this");
     }
 
     //update question method
@@ -91,6 +125,9 @@ public class NavigateFragment extends Fragment {
         } else {
             animalText.setText("Directions to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)));
             directionText.setText(direction);
+            if (mCurrentIndex == directions.size() - 2) {
+                skipButton.setVisibility(View.GONE);
+            }
             if (mCurrentIndex == directions.size() - 1) {
                 nextView.setVisibility(View.GONE);
             } else {

@@ -21,10 +21,10 @@ public class Pathfinder {
     Map<String, ZooData.VertexInfo> vInfo;
     Map<String, ZooData.EdgeInfo> eInfo;
 
-    public Pathfinder(List<String> list, Context context) {
+    public Pathfinder(List<String> list, Context context, String currentExhibit) {
         exhibits = list;
-        start = "entrance_exit_gate";
-        end = start;
+        start = currentExhibit;
+        end = "entrance_exit_gate";
 
         g = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
         vInfo = ZooData.loadVertexInfoJSON(context, "sample_node_info.json");
