@@ -23,7 +23,8 @@ public class Vertex {
     public enum Kind {
         @SerializedName("gate") GATE,
         @SerializedName("exhibit") EXHIBIT,
-        @SerializedName("intersection") INTERSECTION
+        @SerializedName("intersection") INTERSECTION,
+        @SerializedName("exhibit_group") EXHIBIT_GROUP
     }
 
     //contains a unique id
@@ -31,6 +32,7 @@ public class Vertex {
     @NonNull
     @PrimaryKey
     public String id;
+    public String group_id;
     public Kind kind;
     public String name;
     public List<String> tags;
@@ -39,8 +41,9 @@ public class Vertex {
     public double lng;
 
     //2. Constructor matching fields above
-    public Vertex(String id, Kind kind, String name, List<String> tags, double lat, double lng) {
+    public Vertex(String id, String group_id, Kind kind, String name, List<String> tags, double lat, double lng) {
         this.id = id;
+        this.group_id = group_id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
@@ -74,20 +77,27 @@ public class Vertex {
     }
 
     @NonNull
+    public String getGroup_id() { return group_id; }
+
+    @NonNull
     public double getLat() { return this.lat; }
 
     @NonNull
     public double getLng() { return this.lng; }
 
     @NonNull
+
     @Override
     public String toString() {
         return "Vertex{" +
                 "id='" + id + '\'' +
+                ", group_id='" + group_id + '\'' +
                 ", kind=" + kind +
                 ", name='" + name + '\'' +
                 ", tags=" + tags +
                 ", isSelected=" + isSelected +
+                ", lat=" + lat +
+                ", lng=" + lng +
                 '}';
     }
 }

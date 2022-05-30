@@ -25,6 +25,7 @@ public class Pathfinder {
     Graph<String, IdentifiedWeightedEdge> g;
     Map<String, ZooData.VertexInfo> vInfo;
     Map<String, ZooData.EdgeInfo> eInfo;
+    List<String> orderedList;
 
     public Pathfinder(List<String> list, Context context, String currentExhibit) {
         exhibits = list;
@@ -38,6 +39,10 @@ public class Pathfinder {
         vertexDao = db.vertexDao();
     }
 
+    public Vertex getVertexId(String name){
+        return vertexDao.get(vInfo.get(name).id);
+    }
+
     public Vertex getVertexId(int i){
         return vertexDao.get(vInfo.get(i).id);
     }
@@ -47,7 +52,17 @@ public class Pathfinder {
     }
 
     public List<GraphPath<String, IdentifiedWeightedEdge>> plan(){
-        List<String> tempExhibits = exhibits;
+        List<String> tempExhibits = new ArrayList<>();
+        for (String s : exhibits) {
+            tempExhibits.add(s);
+        }
+        //check for parent-child exhibits
+        for (int x = 0; x<tempExhibits.size();x++) {
+            if (vInfo.get(tempExhibits.get(x)).group_id != null) {
+                String id = vertexDao.getParentVertex(vInfo.get(tempExhibits.get(x)).group_id).id;
+                tempExhibits.set(x,id);
+            }
+        }
         List<GraphPath<String, IdentifiedWeightedEdge>> paths = new ArrayList<GraphPath<String, IdentifiedWeightedEdge>>();
 
         GraphPath<String, IdentifiedWeightedEdge> minPath = null;
@@ -63,6 +78,7 @@ public class Pathfinder {
                 }
             }
             paths.add(minPath);
+            //System.out.println(minPath);
             start = minPath.getEndVertex();
             tempExhibits.remove(start);
             minPath = null;
@@ -76,17 +92,27 @@ public class Pathfinder {
     }
 
     public List<String> pathsToStringList(List<GraphPath<String, IdentifiedWeightedEdge>> paths) {
-
+        List<String> tempExhibits = new ArrayList<>();
+        for (String s : exhibits) {
+            tempExhibits.add(s);
+        }
         List<String> info = new ArrayList<String>();
         int totalDistance = 0;
 
         for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
             int distance = (int)path.getWeight();
+            String id = vInfo.get(path.getEndVertex().toString()).id;
             String name = vInfo.get(path.getEndVertex().toString()).name;
+            for (String s : tempExhibits) {
+                if (vInfo.get(s).group_id != null && vInfo.get(s).group_id.equals(id)) {
+                    name = vInfo.get(s).name;
+                    tempExhibits.remove(s);
+                    break;
+                }
+            }
             totalDistance += distance;
             info.add(name + " " + totalDistance + "m");
         }
-
         return info;
     }
 
@@ -108,16 +134,34 @@ public class Pathfinder {
 
     //this is a map to associate the animal exhibit with the calculated distance for sorting the plan list and displaying the distance
     public Map<String,Integer> getDistanceMapping(List<GraphPath<String, IdentifiedWeightedEdge>> paths) {
+        List<String> tempExhibits = new ArrayList<>();
+        orderedList = new ArrayList<>();
+        for (String s : exhibits) {
+            tempExhibits.add(s);
+        }
         Map<String, Integer> distanceMapping = new HashMap();
         int totalDistance = 0;
 
         for (GraphPath<String, IdentifiedWeightedEdge> path : paths) {
             int distance = (int)path.getWeight();
             String id = Objects.requireNonNull(vInfo.get(path.getEndVertex())).id;
+            for (String s : tempExhibits) {
+                if (vInfo.get(s).group_id != null && vInfo.get(s).group_id.equals(id)) {
+                    id = vInfo.get(s).id;
+                    tempExhibits.remove(s);
+                    break;
+                }
+            }
             totalDistance += distance;
             distanceMapping.put(id,totalDistance);
+            orderedList.add(id);
         }
         return distanceMapping;
+    }
+
+    //return ordered list
+    public List<String> getOrderedList() {
+        return orderedList;
     }
     // for testing do Log.d("name", "print this"); instead of system.out
 }

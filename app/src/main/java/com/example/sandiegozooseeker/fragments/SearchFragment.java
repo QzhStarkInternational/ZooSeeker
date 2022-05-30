@@ -57,7 +57,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d("search", charSequence.toString());
+                //Log.d("search", charSequence.toString());
                 adapter.getFilter().filter(charSequence.toString());
             }
 

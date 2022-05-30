@@ -62,6 +62,7 @@ public class Directions {
         for (IdentifiedWeightedEdge e : path.getEdgeList()) {
             double weight = g.getEdgeWeight(e);
             String street = eInfo.get(e.getId()).street;
+            //String id = vInfo.get(vertices.get(vertex).toString()).group_id != null ? vertexDao.getParentVertex(vInfo.get(vertices.get(vertex).toString()).group_id).id : vInfo.get(vertices.get(vertex).toString()).id;
             String source = vInfo.get(vertices.get(vertex).toString()).name;
             vertex++;
             String target = vInfo.get(vertices.get(vertex).toString()).name;

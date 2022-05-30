@@ -48,7 +48,7 @@ public class DatabaseRemoveFragmentTest {
                 .addTypeConverter(new DataConverter())
                 .build();
         VertexDatabase.injectTestDatabase(vertexDb);
-        List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+        List<Vertex> vertices = Vertex.loadJSON(context, "zoo_node_info.json");
         vertexDao = vertexDb.vertexDao();
         vertexDao.insertAll(vertices);
     }

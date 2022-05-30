@@ -39,6 +39,9 @@ public interface VertexDao {
     @Query("SELECT name FROM `animal_vertex` WHERE `id`=:id")
     public String getAnimalName(String id);
 
+    @Query("SELECT * FROM `animal_vertex` WHERE `id`=:id")
+    public Vertex getParentVertex(String id);
+
     @Update
     public void update(Vertex vertex);
 
