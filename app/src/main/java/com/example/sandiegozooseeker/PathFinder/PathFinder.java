@@ -1,6 +1,8 @@
 package com.example.sandiegozooseeker.PathFinder;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
@@ -8,6 +10,7 @@ import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.graph.IdentifiedWeightedEdge;
 import com.example.sandiegozooseeker.graph.Zoo;
 import com.example.sandiegozooseeker.graph.ZooGraph;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -20,6 +23,7 @@ import java.util.Objects;
 
 public class PathFinder {
     private List<GraphVertex> exhibits;
+    private List<GraphVertex> remainingExhibits;
     private final ZooGraph zooGraph;
     private GraphVertex start;
     private final GraphVertex end;
@@ -32,7 +36,8 @@ public class PathFinder {
         VertexDao vertexDao = VertexDatabase.getSingleton(context).vertexDao();
         this.zooGraph = Zoo.getZoo(context);
         this.context = context;
-        this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);;
+        this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
+        this.remainingExhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
         this.start = start;
         this.end = zooGraph.getVertex("entrance_exit_gate");
         this.paths = createPlan();
@@ -46,6 +51,10 @@ public class PathFinder {
         this.paths = createPlan();
         this.animalList = getOrderedList();
         this.animalIndex = 0;
+    }
+
+    public List<GraphVertex> getRemainingExhibits(){
+        return remainingExhibits;
     }
 
     public String nextAnimalName(){
@@ -85,6 +94,22 @@ public class PathFinder {
         }
 
         animalIndex++;
+
+        if(animalIndex > 1){
+            int animalToRemove = 0;
+
+            for(int i = 0; i < exhibits.size(); i++){
+                if(Objects.equals(remainingExhibits.get(i).getId(), animalList.get(animalIndex - 2))){
+                    animalToRemove = i;
+                    break;
+                }
+            }
+
+            remainingExhibits.remove(animalToRemove);
+        }
+
+
+
         return directions;
     }
 
@@ -135,27 +160,29 @@ public class PathFinder {
 
     private List<GraphPath<String, IdentifiedWeightedEdge>> createPlan(){
         List<GraphVertex> tempExhibits = exhibits;
-        List<GraphPath<String, IdentifiedWeightedEdge>> paths = new ArrayList<GraphPath<String, IdentifiedWeightedEdge>>();
+        List<GraphPath<String, IdentifiedWeightedEdge>> paths = new ArrayList<>();
 
         GraphPath<String, IdentifiedWeightedEdge> minPath = null;
         int minDistance = Integer.MAX_VALUE;
 
+        GraphVertex startVertex = this.start;
+
         while (!(tempExhibits.isEmpty())) {
 
             for (GraphVertex exhibit : tempExhibits) {
-                GraphPath<String, IdentifiedWeightedEdge> tempPath = DijkstraShortestPath.findPathBetween(zooGraph.getGRAPH(), start.getId(), exhibit.getId());
+                GraphPath<String, IdentifiedWeightedEdge> tempPath = DijkstraShortestPath.findPathBetween(zooGraph.getGRAPH(), startVertex.getId(), exhibit.getId());
                 if ((int)tempPath.getWeight() < minDistance) {
                     minPath = tempPath;
-                    minDistance = (int)minPath.getWeight();
+                    minDistance = (int) minPath.getWeight();
                 }
             }
             paths.add(minPath);
             assert minPath != null;
-            start = zooGraph.getVertex(minPath.getEndVertex());
+            startVertex = zooGraph.getVertex(minPath.getEndVertex());
             int indexToRemove = 0;
 
             for(int i = 0; i < tempExhibits.size(); i++) {
-                if(start.getId().equals(tempExhibits.get(i).getId())){
+                if(startVertex.getId().equals(tempExhibits.get(i).getId())){
                     indexToRemove = i;
                     break;
                 }
@@ -166,7 +193,7 @@ public class PathFinder {
             minDistance = Integer.MAX_VALUE;
         }
 
-        GraphPath<String, IdentifiedWeightedEdge> exitPath = DijkstraShortestPath.findPathBetween(zooGraph.getGRAPH(), start.getId(), end.getId());
+        GraphPath<String, IdentifiedWeightedEdge> exitPath = DijkstraShortestPath.findPathBetween(zooGraph.getGRAPH(), startVertex.getId(), end.getId());
         paths.add(exitPath);
 
         return paths;
@@ -210,5 +237,26 @@ public class PathFinder {
         }
 
         return distanceMapping;
+    }
+
+    public GraphVertex checkLocation(LatLng location){
+        GraphVertex planedVertex;
+        GraphVertex newStart = null;
+        if(animalIndex == 1){
+            planedVertex = zooGraph.getVertex(start.getId());
+        } else {
+            planedVertex = zooGraph.getVertex(animalList.get(animalIndex - 2));
+        }
+
+        if(planedVertex.getLat() != location.longitude && planedVertex.getLng() != location.longitude){
+            for(GraphVertex graphVertex : zooGraph.getVERTICES()){
+                if(graphVertex.getLat() == location.longitude && graphVertex.getLng() == location.longitude){
+                    newStart = graphVertex;
+                    break;
+                }
+            }
+        }
+
+        return newStart == null ? planedVertex : newStart;
     }
 }
