@@ -19,9 +19,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.example.sandiegozooseeker.AnimalDB.DataConverter;
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.example.sandiegozooseeker.graph.Zoo;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class DatabaseRemoveFragmentTest {
                 .addTypeConverter(new DataConverter())
                 .build();
         VertexDatabase.injectTestDatabase(vertexDb);
-        List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+        List<GraphVertex> vertices = Zoo.getZoo(ApplicationProvider.getApplicationContext()).getVERTICES();
         vertexDao = vertexDb.vertexDao();
         vertexDao.insertAll(vertices);
     }
@@ -74,7 +75,7 @@ public class DatabaseRemoveFragmentTest {
         onView(withId(R.id.vertex_items_plan)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         onView(withId(R.id.vertex_items_plan)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
 
-        List<Vertex> populatedDb = vertexDao.getSelectedExhibits(Vertex.Kind.EXHIBIT);
+        List<GraphVertex> populatedDb = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
         assertEquals(1, populatedDb.size());
     }
 }

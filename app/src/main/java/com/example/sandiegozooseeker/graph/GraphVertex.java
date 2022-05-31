@@ -1,4 +1,4 @@
-package com.example.sandiegozooseeker.AnimalDB;
+package com.example.sandiegozooseeker.graph;
 
 import android.content.Context;
 
@@ -17,72 +17,69 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(tableName = "animal_vertex")
-public class Vertex {
+public class GraphVertex {
     public enum Kind {
         @SerializedName("gate") GATE,
         @SerializedName("exhibit") EXHIBIT,
         @SerializedName("intersection") INTERSECTION
     }
 
-    //contains a unique id
-    //1. Public fields
     @NonNull
     @PrimaryKey
-    public String id;
-    public Kind kind;
-    public String name;
-    public List<String> tags;
-    public boolean isSelected;
-    public double lat;
-    public double lng;
+    private String id;
+    private String name;
+    private Kind kind;
+    private List<String> tags;
+    private double lat;
+    private double lng;
+    private boolean isSelected;
 
     //2. Constructor matching fields above
-    public Vertex(String id, Kind kind, String name, List<String> tags, double lat, double lng) {
+    public GraphVertex(String id, Kind kind, String name, List<String> tags, double lat, double lng) {
         this.id = id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
-        this.isSelected = false;
         this.lat = lat;
         this.lng = lng;
+        this.isSelected = false;
     }
 
-    public static List<Vertex> loadJSON(Context context, String path) {
-        try {
-            InputStream input = context.getAssets().open(path);
-            Reader reader = new InputStreamReader(input);
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<Vertex>>(){}.getType();
-            return gson.fromJson(reader,type);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-    }
+    public void setId(String id){ this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setKind(Kind kind) { this.kind = kind; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+    public void setLat(double lat) { this.lat = lat; }
+    public void setLng(double lng) { this.lng = lng; }
+    public void setSelected(boolean isSelected) { this.isSelected = isSelected; }
 
-
-    // Update
-    public String getName() {
-        return this.name;
-    }
-
-    @NonNull
     public String getId() {
         return id;
     }
-
-    @NonNull
+    public String getName() {
+        return this.name;
+    }
+    public Kind getKind(){return this.kind;}
+    public List<String> getTags(){return this.tags;}
     public double getLat() { return this.lat; }
-
-    @NonNull
     public double getLng() { return this.lng; }
+    public boolean getIsSelected(){ return this.isSelected; }
+
+    public int compareTo(GraphVertex graphVertex){
+        if(Objects.equals(this.id, graphVertex.id)){
+            return 0;
+        }
+
+        return -1;
+    }
 
     @NonNull
     @Override
     public String toString() {
-        return "Vertex{" +
+        return "GraphVertex{" +
                 "id='" + id + '\'' +
                 ", kind=" + kind +
                 ", name='" + name + '\'' +
