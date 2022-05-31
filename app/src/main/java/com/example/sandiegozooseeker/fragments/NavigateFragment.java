@@ -84,6 +84,10 @@ public class NavigateFragment extends Fragment {
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
+    private CardView previousView;
+    private TextView previousAnimalNameTextView;
+    private TextView previousAnimalDistanceTextView;
+
     private Button skipButton;
     private String start;
     Directions dir;
@@ -120,6 +124,11 @@ public class NavigateFragment extends Fragment {
         latInput = (EditText) view.findViewById(R.id.latInput);
         lngInput = (EditText) view.findViewById(R.id.lngInput);
         enterButton = (Button) view.findViewById(R.id.enterCordButton);
+
+        //previous view
+        previousView = view.findViewById(R.id.previousView);
+        previousAnimalNameTextView = (TextView) view.findViewById(R.id.previousAnimalName);
+        previousAnimalDistanceTextView = (TextView) view.findViewById(R.id.previousAnimalDirection);
 
         //skip button
         skipButton = (Button)view.findViewById(R.id.skipButton);
@@ -161,6 +170,21 @@ public class NavigateFragment extends Fragment {
             }
         });
 
+        //currently can only go backwards once
+        previousView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateDirections();
+                if (mCurrentIndex != 0) {
+                    animalText.setText("Directions from " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)) + " to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex-1)));
+                    directionText.setText(dir.getPrevious(mCurrentIndex+1));
+                }
+                //mCurrentIndex = (mCurrentIndex-1) % directions.size();
+                checkLoc();
+            }
+        });
+
+        //when you skip you can't use previous
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,29 +250,74 @@ public class NavigateFragment extends Fragment {
 
         String provider = LocationManager.GPS_PROVIDER;
         LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        //setting mocked location
+        Location loc = new Location("dummyProvider");
+        Double lat = 0.0;
+        Double lng = 0.0;
+        if (latInput.getText().toString().equals("") || lngInput.getText().toString().equals("")) {
+            lat = dir.getCurrentVertex(mCurrentIndex).getLat();
+            lng = dir.getCurrentVertex(mCurrentIndex).getLng();
+        } else {
+            lat = Double.parseDouble(latInput.getText().toString());
+            lng = Double.parseDouble(lngInput.getText().toString());
+            latInput.setText("");
+            lngInput.setText("");
+        }
+        loc.setLatitude((double)lat);
+        //Log.d("CurrentLocation", loc.getLatitude() + "");
+        loc.setLongitude((double)lng);
+        //Log.d("OffTrack", loc.getLatitude() + " " + loc.getLongitude());
+//        fusedLocationClient.setMockMode(true);
+//        Double lat = 32.735851415117665;
+//        Double lng = -117.16626781198586;
+        fusedLocationClient.setMockLocation(loc);
         fusedLocationClient.getCurrentLocation(100, ct)
                 .addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            //LatLng currentLocation = new LatLng((double)location.getLatitude(), (double)location.getLongitude());
+                            //Log.d("CurrentLocation", loc.getLatitude() + "");
                             Vertex currentVertex = dir.getCurrentVertex(mCurrentIndex);
+                            //Log.d("Current", currentVertex.getLat() + " " + currentVertex.getLng());
 
-                            if (currentVertex.getLat() != currentLocation.latitude && currentVertex.getLng() != currentLocation.longitude) {
+                            if (currentVertex.getLat() != loc.getLatitude() && currentVertex.getLng() != loc.getLatitude()) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                                 builder.setPositiveButton("Replan", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        int maxIndex = pf.getvertexNums();
+                                        //loop through all exhibits selected
+                                        int maxIndex = orderedList.size();
 
                                         for(int i = 0; i < maxIndex; i++){
-                                            Vertex currentV = pf.getVertexId(i);
-                                            if(currentV.getLat() == currentLocation.latitude && currentV.getLng() == currentLocation.longitude){
+                                            Vertex currentV = dir.getCurrentVertex(i);
+                                            //check parent-child relationship
+                                            //is a child exhibit
+                                            Double lat;
+                                            Double lng;
+                                            if (currentV.group_id != null) {
+                                                lat = pf.getVertexId(currentV.group_id).lat;
+                                                lng = pf.getVertexId(currentV.group_id).lng;
+                                            } else {
+                                                lat = currentV.getLat();
+                                                lng = currentV.getLng();
+                                            }
+                                            if(lat == loc.getLatitude() && lng == loc.getLongitude()){
+                                                //Log.d("New Start",currentV.id);
                                                 pf = new Pathfinder(selectedExhibits, getActivity(), currentV.id);
                                                 List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
                                                 dir = new Directions(plan, getActivity());
                                                 directions = dir.getDirectionsAllAnimals();
-                                                orderedList = dir.getOrderedList();
+                                                Log.d("Directions new", directions.toString());
+                                                //dummy call to populate ordered list
+                                                tempMapping = pf.getDistanceMapping(plan);
+                                                orderedList = pf.getOrderedList();
+                                                remainingExhibits = new ArrayList<String>(orderedList);
+                                                Log.d("New Ordered List", remainingExhibits.toString());
+                                                mCurrentIndex = 0;
+                                                start = currentV.id;
+                                                //orderedList = dir.getOrderedList();
                                                 updateDirections();
                                             }
                                         }
@@ -289,12 +358,20 @@ public class NavigateFragment extends Fragment {
             directionText.setText("");
             skipButton.setVisibility(View.GONE);
             nextView.setVisibility(View.GONE);
+            previousView.setVisibility(View.GONE);
         } else {
             //Log.d("DISPLAY", "display: " + start);
             animalText.setText("Directions from " + vertexDao.getAnimalName(start) + " to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)));
             directionText.setText(direction);
             if (mCurrentIndex == directions.size() - 1) {
                 skipButton.setVisibility(View.GONE);
+            }
+            if (mCurrentIndex != 0) {
+                previousView.setVisibility(View.VISIBLE);
+                previousAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex - 1)));
+                previousAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex-1));
+            } else {
+                previousView.setVisibility(View.GONE);
             }
             if (mCurrentIndex == directions.size()-1) {
                 nextView.setVisibility(View.GONE);
