@@ -62,7 +62,7 @@ public class NavigateFragment extends Fragment {
                             .RequestMultiplePermissions(), result -> {
                         Boolean fineLocationGranted = result.getOrDefault(
                                 Manifest.permission.ACCESS_FINE_LOCATION, false);
-                        Boolean coarseLocationGranted = result.getOrDefault(
+                         Boolean coarseLocationGranted = result.getOrDefault(
                                 Manifest.permission.ACCESS_COARSE_LOCATION, false);
                         if (fineLocationGranted != null && fineLocationGranted) {
                             // Precise location access granted.
