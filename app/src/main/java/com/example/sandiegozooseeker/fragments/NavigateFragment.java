@@ -153,20 +153,19 @@ public class NavigateFragment extends Fragment {
         animalText.setText(String.format("Directions to: %s", pf.currentAnimalName()));
         directionText.setText(directionString.toString());
 
-        if (pf.getAnimalIndex()-1 != 0) {
+        if (pf.getVisitedExhibits().size() != 0) {
             previousAnimalNameTextView.setText(pf.previousAnimalName());
             previousAnimalDistanceTextView.setText(pf.previousLabel());
             previousAnimalView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             previousAnimalView.setVisibility(View.INVISIBLE);
         }
-        if (pf.getAnimalIndex() != pf.getOrderedNamedList().size()) {
+
+        if (pf.getRemainingExhibits().size() != 0) {
             nextAnimalNameTextView.setText(pf.nextAnimalName());
             nextAnimalDistanceTextView.setText(pf.nextLabel());
             nextView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             nextView.setVisibility(View.INVISIBLE);
         }
 

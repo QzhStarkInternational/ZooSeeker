@@ -45,9 +45,9 @@ public class PathFinder {
         vertexDao = VertexDatabase.getSingleton(context).vertexDao();
         this.zooGraph = Zoo.getZoo(context);
         this.context = context;
-        this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT );
+        this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
         this.remainingExhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
-        this.visitedExhibits = new ArrayList<GraphVertex>();
+        this.visitedExhibits = new ArrayList<>();
         this.start = start;
         this.end = zooGraph.getVertex("entrance_exit_gate");
         this.paths = createPlan();
@@ -79,7 +79,10 @@ public class PathFinder {
         this.paths = createPlan();
         this.animalList = getOrderedList();
         this.animalIndex = 0;
+        this.tempMapping = getDistanceMapping();
+        this.orderedNamedList = getOrderedNamedList();
     }
+
     public int getAnimalIndex() {
         return animalIndex;
     }
@@ -93,31 +96,27 @@ public class PathFinder {
     }
 
     public String nextAnimalName(){
-        if(animalIndex >= animalList.size()){
-            return "NULL";
+        if(remainingExhibits.size() == 1){
+            return zooGraph.getVertex("entrance_exit_gate").getName();
         }
 
-        return vertexDao.getAnimalName(orderedNamedList.get(animalIndex));
-        //return orderedNamedList.get(animalIndex);
-        //return zooGraph.getVertex(animalList.get(animalIndex)).getName();
+        return remainingExhibits.get(1).getName();
     }
 
     public String previousAnimalName(){
-        if(animalIndex - 2 < 0){
-            return "NULL";
+        if(visitedExhibits.size() == 0){
+            return zooGraph.getVertex("entrance_exit_gate").getName();
         }
 
-        return vertexDao.getAnimalName(orderedNamedList.get(animalIndex-2));
-        //return zooGraph.getVertex(animalList.get(animalIndex-1)).getName();
+        return visitedExhibits.get(visitedExhibits.size() - 1).getName();
     }
 
     public String currentAnimalName(){
-        if(animalIndex-1 >= animalList.size()){
-            return "NULL";
+        if(remainingExhibits.size() == 0){
+            return zooGraph.getVertex("entrance_exit_gate").getName();
         }
 
-        return vertexDao.getAnimalName(orderedNamedList.get(animalIndex-1));
-        //return zooGraph.getVertex(animalList.get(animalIndex - 1)).getName();
+        return remainingExhibits.get(0).getName();
     }
 
     public List<String> getDirection(boolean brief){
@@ -173,16 +172,7 @@ public class PathFinder {
         animalIndex++;
 
         if(animalIndex > 1){
-            int animalToRemove = 0;
-
-            for(int i = 0; i < exhibits.size(); i++){
-                if(Objects.equals(remainingExhibits.get(i).getId(), animalList.get(animalIndex - 2))){
-                    animalToRemove = i;
-                    break;
-                }
-            }
-
-            visitedExhibits.add(remainingExhibits.remove(animalToRemove));
+            visitedExhibits.add(remainingExhibits.remove(0));
         }
 
         return directions;
@@ -196,7 +186,11 @@ public class PathFinder {
             return directions;
         }
 
-        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex - 1);
+        remainingExhibits.add(0, visitedExhibits.remove(visitedExhibits.size() - 1));
+        animalIndex = 1;
+        this.paths = createPlan();
+
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex);
         List<String> vertices = path.getVertexList();
         int vertex = vertices.size() - 1;
 
@@ -241,8 +235,6 @@ public class PathFinder {
             }
         }
 
-        animalIndex--;
-        remainingExhibits.add(0, visitedExhibits.remove(visitedExhibits.size()-1));
         return directions;
     }
 
@@ -272,7 +264,7 @@ public class PathFinder {
             return "";
         }
 
-        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex + 1);
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex - 1);
         return path.getWeight() + "m";
     }
 
@@ -289,11 +281,11 @@ public class PathFinder {
 
     private List<GraphPath<String, IdentifiedWeightedEdge>> createPlan(){
         List<GraphVertex> tempExhibits = new ArrayList<>();
-        for (GraphVertex s : exhibits) {
+        for (GraphVertex s : remainingExhibits) {
             tempExhibits.add(s);
         }
         //check for parent-child exhibits
-        for (int x = 0; x<tempExhibits.size();x++) {
+        for (int x = 0; x < tempExhibits.size();x++) {
             if (tempExhibits.get(x).group_id != null) {
                 //replace with parent vertex
                 GraphVertex id = vertexDao.getParentVertex(tempExhibits.get(x).group_id);
@@ -408,10 +400,15 @@ public class PathFinder {
     public GraphVertex checkLocation(LatLng location){
         GraphVertex planedVertex;
         GraphVertex newStart = null;
+
+        if(remainingExhibits.size() == 0){
+            return null;
+        }
+
         if(animalIndex == 1){
             planedVertex = zooGraph.getVertex(start.getId());
         } else {
-            planedVertex = zooGraph.getVertex(animalList.get(animalIndex - 2));
+            planedVertex = remainingExhibits.get(0);
         }
 
         if(planedVertex.getLat() != location.longitude && planedVertex.getLng() != location.longitude){
