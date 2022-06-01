@@ -24,31 +24,35 @@ public class GraphVertex {
     public enum Kind {
         @SerializedName("gate") GATE,
         @SerializedName("exhibit") EXHIBIT,
-        @SerializedName("intersection") INTERSECTION
+        @SerializedName("intersection") INTERSECTION,
+        @SerializedName("exhibit_group") EXHIBIT_GROUP
     }
 
     @NonNull
     @PrimaryKey
-    private String id;
-    private String name;
-    private Kind kind;
-    private List<String> tags;
-    private double lat;
-    private double lng;
-    private boolean isSelected;
+    public String id;
+    public String group_id;
+    public Kind kind;
+    public String name;
+    public List<String> tags;
+    public boolean isSelected;
+    public double lat;
+    public double lng;
 
     //2. Constructor matching fields above
-    public GraphVertex(String id, Kind kind, String name, List<String> tags, double lat, double lng) {
+    public GraphVertex(String id, String group_id, Kind kind, String name, List<String> tags, double lat, double lng) {
         this.id = id;
+        this.group_id = group_id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
+        this.isSelected = false;
         this.lat = lat;
         this.lng = lng;
-        this.isSelected = false;
     }
 
     public void setId(String id){ this.id = id; }
+    public void setGroup_id(String groupId) { this.group_id = groupId; }
     public void setName(String name) { this.name = name; }
     public void setKind(Kind kind) { this.kind = kind; }
     public void setTags(List<String> tags) { this.tags = tags; }
@@ -59,6 +63,7 @@ public class GraphVertex {
     public String getId() {
         return id;
     }
+    public String getGroup_id() { return group_id; }
     public String getName() {
         return this.name;
     }
@@ -79,12 +84,15 @@ public class GraphVertex {
     @NonNull
     @Override
     public String toString() {
-        return "GraphVertex{" +
+        return "Vertex{" +
                 "id='" + id + '\'' +
+                ", group_id='" + group_id + '\'' +
                 ", kind=" + kind +
                 ", name='" + name + '\'' +
                 ", tags=" + tags +
                 ", isSelected=" + isSelected +
+                ", lat=" + lat +
+                ", lng=" + lng +
                 '}';
     }
 }
