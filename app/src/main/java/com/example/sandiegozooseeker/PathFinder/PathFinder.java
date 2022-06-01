@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 import com.example.sandiegozooseeker.graph.GraphVertex;
@@ -24,7 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class PathFinder {
-    private final VertexDao vertexDao;
+    private VertexDao vertexDao;
     private List<GraphVertex> exhibits;
     private List<GraphVertex> remainingExhibits;
     private List<GraphVertex> visitedExhibits;
@@ -45,6 +47,22 @@ public class PathFinder {
         this.context = context;
         this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT );
         this.remainingExhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
+        this.visitedExhibits = new ArrayList<GraphVertex>();
+        this.start = start;
+        this.end = zooGraph.getVertex("entrance_exit_gate");
+        this.paths = createPlan();
+        this.animalList = getOrderedList();
+        this.tempMapping = getDistanceMapping();
+        this.orderedNamedList = getOrderedNamedList();
+        animalIndex = 0;
+    }
+
+    @VisibleForTesting
+    public PathFinder(Context context, GraphVertex start, List<GraphVertex> exhibits){
+        this.zooGraph = Zoo.getZoo(context);
+        this.context = context;
+        this.exhibits = exhibits;
+        this.remainingExhibits = exhibits;
         this.visitedExhibits = new ArrayList<GraphVertex>();
         this.start = start;
         this.end = zooGraph.getVertex("entrance_exit_gate");
@@ -102,25 +120,54 @@ public class PathFinder {
         //return zooGraph.getVertex(animalList.get(animalIndex - 1)).getName();
     }
 
-    public List<String> getDirection(){
+    public List<String> getDirection(boolean brief){
         List<String> directions = new ArrayList<>();
 
         if(animalIndex >= paths.size()){
             return directions;
         }
 
-
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex);
         List<String> vertices = path.getVertexList();
         int vertex = 0;
 
-        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
-            double weight = zooGraph.getGRAPH().getEdgeWeight(edge);
-            String street = zooGraph.getEdge(edge.getId()).getStreet();
-            String source = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
-            vertex++;
-            String target = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
-            directions.add("Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n");
+        if (brief) {
+            String oldStreet = "";
+            String oldSource = "";
+            double totalWeight = 0;
+            int curr = 0;
+            for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+                double weight = zooGraph.getGRAPH().getEdgeWeight(edge);
+                totalWeight += weight;
+                String street = zooGraph.getEdge(edge.getId()).getStreet();
+                String source = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+                vertex++;
+                String target = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+
+                if (oldStreet.equals(street)) {
+
+                    directions.set(curr-1, "Walk " + totalWeight + " meters along " + street + " from " + oldSource + " to " + target + ".\n");
+                }
+                else {
+                    directions.add("Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n");
+                    oldStreet = street;
+                    oldSource = source;
+                    totalWeight = weight;
+                }
+
+                curr++;
+            }
+        }
+        else {
+
+            for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+                double weight = zooGraph.getGRAPH().getEdgeWeight(edge);
+                String street = zooGraph.getEdge(edge.getId()).getStreet();
+                String source = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+                vertex++;
+                String target = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+                directions.add("Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n");
+            }
         }
 
         animalIndex++;
@@ -142,7 +189,7 @@ public class PathFinder {
     }
 
     // Directions back to the previous exhibit, give input of current exhibit
-    public List<String> getPrevious() {
+    public List<String> getPrevious(boolean brief) {
         List<String> directions = new ArrayList<>();
 
         if (animalIndex < 1) {
@@ -152,14 +199,46 @@ public class PathFinder {
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex - 1);
         List<String> vertices = path.getVertexList();
         int vertex = vertices.size() - 1;
-        for (int i = 0; i < path.getLength(); i++) {
-            IdentifiedWeightedEdge edge = path.getEdgeList().get(path.getLength() - 1 - i);
-            double weight = zooGraph.getGRAPH().getEdgeWeight(edge);
-            String street = zooGraph.getEdge(edge.getId()).getStreet();
-            String source = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
-            vertex--;
-            String target = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
-            directions.add((i+1) + ". Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n");
+
+        if (brief) {
+            String oldStreet = "";
+            String oldSource = "";
+            double totalWeight = 0;
+            int curr = 0;
+            for (int i = 0; i < path.getLength(); i++) {
+                IdentifiedWeightedEdge edge = path.getEdgeList().get(path.getLength() - 1 - i);
+                double weight = zooGraph.getGRAPH().getEdgeWeight(edge);
+                totalWeight += weight;
+                String street = zooGraph.getEdge(edge.getId()).getStreet();
+                String source = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+                vertex--;
+                String target = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+
+                if (oldStreet.equals(street)) {
+
+                    directions.set(curr-1, "Walk " + totalWeight + " meters along " + street + " from " + oldSource + " to " + target + ".\n");
+                }
+                else {
+                    directions.add("Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n");
+                    oldStreet = street;
+                    oldSource = source;
+                    totalWeight = weight;
+                }
+
+                curr++;
+            }
+        }
+        else {
+
+            for (int i = 0; i < path.getLength(); i++) {
+                IdentifiedWeightedEdge edge = path.getEdgeList().get(path.getLength() - 1 - i);
+                double weight = zooGraph.getGRAPH().getEdgeWeight(edge);
+                String street = zooGraph.getEdge(edge.getId()).getStreet();
+                String source = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+                vertex--;
+                String target = zooGraph.getVertex(vertices.get(vertex).toString()).getName();
+                directions.add((i+1) + ". Walk " + weight + " meters along " + street + " from " + source + " to " + target + ".\n");
+            }
         }
 
         animalIndex--;

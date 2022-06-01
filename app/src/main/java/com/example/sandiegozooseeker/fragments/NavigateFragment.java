@@ -10,6 +10,7 @@ import android.location.LocationRequest;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -45,8 +46,11 @@ public class NavigateFragment extends Fragment {
     private TextView animalText;
     private CardView nextView;
     private CardView previousAnimalView;
+    private boolean brief;
 
     private Button skipButton;
+
+    private Switch briefDirections;
 
     private LocationRequest locationRequest;
     private CancellationTokenSource taskCancellationSource;
@@ -90,30 +94,39 @@ public class NavigateFragment extends Fragment {
         previousAnimalDistanceTextView = (TextView) view.findViewById(R.id.previousAnimalDirection);
         //skip button
         skipButton = (Button)view.findViewById(R.id.skipButton);
+        briefDirections = (Switch)view.findViewById(R.id.switch1);
         previousAnimalView.setVisibility(View.INVISIBLE);
+        brief = false;
 
         pf = new PathFinder(getContext(), Zoo.getZoo(getContext()).getVertex("entrance_exit_gate"));
 
-        updateDirections(pf.getDirection());
+        updateDirections(pf.getDirection(brief));
         checkLoc();
 
         nextView.setOnClickListener(view1 -> {
-            updateDirections(pf.getDirection());
+            updateDirections(pf.getDirection(brief));
             checkLoc();
         });
 
         previousAnimalView.setOnClickListener(view1 -> {
-            updateDirections(pf.getPrevious());
+            updateDirections(pf.getPrevious(brief));
             checkLoc();
         });
 
         skipButton.setOnClickListener(view1 -> {
             pf.skip();
-            updateDirections(pf.getDirection());
+            updateDirections(pf.getDirection(brief));
             openDialog();
             checkLoc();
         });
 
+        briefDirections.setOnClickListener(view1 -> {
+            brief = !brief;
+            if (pf.getVisitedExhibits().size() != 0) {
+                pf.getPrevious(brief);
+                updateDirections(pf.getDirection(brief));
+            }
+        });
 
     }
 
@@ -199,7 +212,7 @@ public class NavigateFragment extends Fragment {
                                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
                                 builder.setPositiveButton("Replan", (dialog, which) -> {
                                     pf.replanPath(pf.getRemainingExhibits(), newStart);
-                                    updateDirections(pf.getDirection());
+                                    updateDirections(pf.getDirection(brief));
                                 });
 
                                 builder.setMessage("Did you take the wrong turn?").setTitle("Oops").show();
