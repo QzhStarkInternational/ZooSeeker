@@ -1,4 +1,6 @@
-package com.example.sandiegozooseeker.pathfinder;
+package com.example.sandiegozooseeker.graph;
+
+import androidx.annotation.NonNull;
 
 import org.jgrapht.alg.util.Pair;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -14,6 +16,7 @@ public class IdentifiedWeightedEdge extends DefaultWeightedEdge {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
+    @NonNull
     @Override
     public String toString() {
         return "(" + getSource() + " :" + id + ": " + getTarget() + ")";

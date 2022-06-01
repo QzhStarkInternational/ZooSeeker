@@ -8,40 +8,45 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.example.sandiegozooseeker.graph.GraphVertex;
+
 import java.util.List;
 
 @Dao
 public interface VertexDao {
     @Insert (onConflict = OnConflictStrategy.REPLACE)
-    public void insert(Vertex vertex);
+    public void insert(GraphVertex graphVertex);
 
     @Insert (onConflict = OnConflictStrategy.REPLACE)
-    public void insertAll(List<Vertex> vertex);
+    public void insertAll(List<GraphVertex> pathVertices);
 
     @Query("SELECT * FROM `animal_vertex` WHERE `id`=:id")
-    public Vertex get(String id);
+    public GraphVertex get(String id);
 
     @Query("SELECT * FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
-    public List<Vertex> getSelectedExhibits(Vertex.Kind kind);
+    public List<GraphVertex> getSelectedExhibits(GraphVertex.Kind kind);
 
     @Query("SELECT * FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
-    public LiveData<List<Vertex>> getSelectedOfKindLive(Vertex.Kind kind);
+    public LiveData<List<GraphVertex>> getSelectedOfKindLive(GraphVertex.Kind kind);
 
     @Query("SELECT * FROM `animal_vertex` WHERE `kind`=:kind")
-    public LiveData<List<Vertex>> getAllOfKindLive(Vertex.Kind kind);
+    public LiveData<List<GraphVertex>> getAllOfKindLive(GraphVertex.Kind kind);
 
     @Query("SELECT id FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
-    public List<String> getSelectedExhibitsID(Vertex.Kind kind);
+    public List<String> getSelectedExhibitsID(GraphVertex.Kind kind);
 
     @Query("SELECT COUNT(ID) FROM `animal_vertex` WHERE `isSelected` AND `kind`=:kind")
-    public LiveData<Integer> getSelectedExhibitsCount(Vertex.Kind kind);
+    public LiveData<Integer> getSelectedExhibitsCount(GraphVertex.Kind kind);
 
     @Query("SELECT name FROM `animal_vertex` WHERE `id`=:id")
     public String getAnimalName(String id);
 
+    @Query("SELECT * FROM `animal_vertex` WHERE `id`=:id")
+    public GraphVertex getParentVertex(String id);
+
     @Update
-    public void update(Vertex vertex);
+    public void update(GraphVertex graphVertex);
 
     @Delete
-    public int delete(Vertex vertex);
+    public int delete(GraphVertex graphVertex);
 }

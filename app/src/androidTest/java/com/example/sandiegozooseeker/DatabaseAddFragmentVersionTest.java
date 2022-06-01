@@ -4,12 +4,7 @@ package com.example.sandiegozooseeker;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -18,36 +13,24 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
 
 import com.example.sandiegozooseeker.AnimalDB.DataConverter;
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.sandiegozooseeker.graph.Zoo;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -72,7 +55,7 @@ public class DatabaseAddFragmentVersionTest {
                 .addTypeConverter(new DataConverter())
                 .build();
         VertexDatabase.injectTestDatabase(vertexDb);
-        List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+        List<GraphVertex> vertices = Zoo.getZoo(ApplicationProvider.getApplicationContext()).getVERTICES();
         vertexDao = vertexDb.vertexDao();
         vertexDao.insertAll(vertices);
     }
@@ -94,7 +77,7 @@ public class DatabaseAddFragmentVersionTest {
 
         onView(withId(R.id.planFragment)).perform(click());
 
-        List<Vertex> populatedDb = vertexDao.getSelectedExhibits(Vertex.Kind.EXHIBIT);
+        List<GraphVertex> populatedDb = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
         assertEquals(2, populatedDb.size());
     }
 

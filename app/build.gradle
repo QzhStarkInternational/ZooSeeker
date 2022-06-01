@@ -23,23 +23,29 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     namespace 'com.example.sandiegozooseeker'
 }
 
 dependencies {
+    def guava_version = "31.1-android"
+    implementation "com.google.guava:guava:$guava_version"
 
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
     implementation "androidx.fragment:fragment:1.4.1"
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation "androidx.navigation:navigation-fragment:2.4.2"
     implementation "androidx.navigation:navigation-ui:2.4.2"
     implementation "androidx.room:room-runtime:2.4.2"
     implementation "androidx.room:room-paging:2.5.0-alpha01"
+    implementation 'com.google.android.gms:play-services-tasks:18.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'com.google.ar.sceneform:rendering:1.17.1'
     annotationProcessor "androidx.room:room-compiler:2.4.2"
 
     // Test Libraries

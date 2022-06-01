@@ -11,7 +11,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.sandiegozooseeker.AnimalDB.DataConverter;
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
 
@@ -50,37 +50,38 @@ public class VertexDatabaseTest {
     public void testInsert() {
         List<String> tag1 = new ArrayList<>(Arrays.asList("rabbit","mammal"));
         List<String> tag2 = new ArrayList<>(Arrays.asList("wolves","mammal"));
-        Vertex v1 = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tag1);
-        Vertex v2 = new Vertex("wolf habitat", Vertex.Kind.EXHIBIT,"Wolves", tag2);
+        GraphVertex v1 = new GraphVertex("rabbit habitat", null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tag1, 0.0, 0.0);
+        GraphVertex v2 = new GraphVertex("wolf habitat",null, GraphVertex.Kind.EXHIBIT,"Wolves", tag2,  0.0, 0.0);
 
         dao.insert(v1);
         dao.insert(v2);
-        Vertex test1 = dao.get("rabbit habitat");
-        Vertex test2 = dao.get("wolf habitat");
+        GraphVertex test1 = dao.get("rabbit habitat");
+        GraphVertex test2 = dao.get("wolf habitat");
         //check inserted with unique IDs (string)
         assertNotEquals(test1.name,test2.name);
     }
     @Test
     public void testGet() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
-        Vertex insertedAnimal = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tags);
+        GraphVertex insertedAnimal = new GraphVertex("rabbit habitat",null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags, 0.0, 0.0);
+
         dao.insert(insertedAnimal);
 
-        Vertex vertex = dao.get("rabbit habitat");
+        GraphVertex graphVertex = dao.get("rabbit habitat");
         //not auto-generated ID
-        assertEquals(insertedAnimal.id, vertex.id);
-        assertEquals(insertedAnimal.name,vertex.name);
-        assertEquals(insertedAnimal.kind,vertex.kind);
-        assertEquals(insertedAnimal.tags,vertex.tags);
+        assertEquals(insertedAnimal.id, graphVertex.id);
+        assertEquals(insertedAnimal.name, graphVertex.name);
+        assertEquals(insertedAnimal.kind, graphVertex.kind);
+        assertEquals(insertedAnimal.tags, graphVertex.tags);
     }
     @Test
     public void testDelete() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
-        Vertex vertex = new Vertex("rabbit habitat", Vertex.Kind.EXHIBIT,"Rabbits In the Wild", tags);
-        dao.insert(vertex);
+        GraphVertex graphVertex = new GraphVertex("rabbit habitat",null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags,  0.0, 0.0);
+        dao.insert(graphVertex);
 
-        vertex = dao.get("rabbit habitat");
-        int numberDeleted = dao.delete(vertex);
+        graphVertex = dao.get("rabbit habitat");
+        int numberDeleted = dao.delete(graphVertex);
         assertEquals(1,numberDeleted);
         assertNull(dao.get("rabbit habitat"));
     }

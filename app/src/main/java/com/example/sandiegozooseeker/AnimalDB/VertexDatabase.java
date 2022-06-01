@@ -10,10 +10,13 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.sandiegozooseeker.graph.GraphVertex;
+import com.example.sandiegozooseeker.graph.Zoo;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Vertex.class}, version = 1)
+@Database(entities = {GraphVertex.class}, version = 1)
 @TypeConverters({DataConverter.class})
 public abstract class VertexDatabase extends RoomDatabase {
     private static VertexDatabase singleton = null;
@@ -36,7 +39,7 @@ public abstract class VertexDatabase extends RoomDatabase {
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
                         Executors.newSingleThreadExecutor().execute(() -> {
-                            List<Vertex> vertices = Vertex.loadJSON(context, "sample_node_info.json");
+                            List<GraphVertex> vertices = Zoo.getZoo(context).getVERTICES();
                             getSingleton(context).vertexDao().insertAll(vertices);
                         });
                     }

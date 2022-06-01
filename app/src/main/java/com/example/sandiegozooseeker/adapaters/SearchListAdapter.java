@@ -10,33 +10,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.cardview.widget.CardView;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
+import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.R;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.ViewHolder> implements Filterable{
-    private List<Vertex> vertices = Collections.emptyList();
-    private List<Vertex> filteredVertices = Collections.emptyList();
-    private BiConsumer<Vertex, View> onClicked;
+    private List<GraphVertex> vertices = Collections.emptyList();
+    private List<GraphVertex> filteredVertices = Collections.emptyList();
+    private BiConsumer<GraphVertex, View> onClicked;
 
     private ItemFilter filter = new ItemFilter();
 
-    public void setVertices(List<Vertex> newVertices) {
+    public void setVertices(List<GraphVertex> newVertices) {
         this.vertices.clear();
         this.filteredVertices.clear();
         this.vertices = newVertices;
@@ -45,7 +39,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     }
 
 
-    public void setOnClickedHandler(BiConsumer<Vertex, View> onClicked) {
+    public void setOnClickedHandler(BiConsumer<GraphVertex, View> onClicked) {
         this.onClicked = onClicked;
     }
 
@@ -71,9 +65,9 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         return filteredVertices.size();
     }
 
-    //since vertex id is a string
+    //since graphVertex id is a string
     public String getVertexId(int position) {
-        return filteredVertices.get(position).id;
+        return filteredVertices.get(position).getId();
         // return vertices.get(position).id;
     }
 
@@ -87,7 +81,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
         private final int transparent;
         private final int tinted;
-        private Vertex vertex;
+        private GraphVertex graphVertex;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -106,20 +100,20 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
             view1.setOnClickListener(view -> {
                 if (onClicked == null) return;
-                onClicked.accept(vertex, itemView);
+                onClicked.accept(graphVertex, itemView);
             });
 
         }
 
-        public Vertex getVertex() { return vertex; }
+        public GraphVertex getVertex() { return graphVertex; }
 
-        public void setVertex(Vertex vertex) {
-            this.vertex = vertex;
-            this.animalNameTextView.setText(vertex.name);
+        public void setVertex(GraphVertex graphVertex) {
+            this.graphVertex = graphVertex;
+            this.animalNameTextView.setText(graphVertex.getName());
 
             tagsChipGroup.removeAllViews();
             //display tags (search terms) for each animal exhibit
-            for(String tag : vertex.tags){
+            for(String tag : graphVertex.getTags()){
 
                 Chip chip = new Chip(context);
                 chip.setText(tag);
@@ -129,7 +123,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             }
 
             //indicator that animal exhibit has been selected
-            if(this.vertex.isSelected){
+            if(this.graphVertex.getIsSelected()){
                 this.materialCardView.setCardBackgroundColor(tinted);
                 this.checkMarkImageView.setVisibility(View.VISIBLE);
             } else {
@@ -152,20 +146,22 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
             FilterResults results = new FilterResults();
 
-            final List<Vertex> list = vertices;
+            final List<GraphVertex> list = vertices;
 
             int count = list.size();
-            final ArrayList<Vertex> selected = new ArrayList<Vertex>(count);
+            final ArrayList<GraphVertex> selected = new ArrayList<GraphVertex>(count);
             if (filterString.isEmpty()) {
                 selected.addAll(vertices);
             } else {
                 for (int i = 0; i < count; i++) {
-                    if(list.get(i).getName().toLowerCase().contains(filterString)){
-                        selected.add(list.get(i));
-                    } else {
-                        for (String s : list.get(i).tags) {
-                            if (s.toLowerCase().contains(filterString)) {
-                                selected.add(list.get(i));
+                    if(!selected.contains(list.get(i))){
+                        if(list.get(i).getName().toLowerCase().contains(filterString)){
+                            selected.add(list.get(i));
+                        } else {
+                            for (String s : list.get(i).getTags()) {
+                                if (s.toLowerCase().contains(filterString)) {
+                                    selected.add(list.get(i));
+                                }
                             }
                         }
                     }
@@ -180,7 +176,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            filteredVertices = (ArrayList<Vertex>) results.values;
+            filteredVertices = (ArrayList<GraphVertex>) results.values;
             notifyDataSetChanged();
         }
 
