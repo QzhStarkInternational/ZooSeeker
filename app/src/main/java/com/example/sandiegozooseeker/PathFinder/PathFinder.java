@@ -250,13 +250,13 @@ public class PathFinder {
 
         if(planedVertex.getLat() != location.longitude && planedVertex.getLng() != location.longitude){
             for(GraphVertex graphVertex : zooGraph.getVERTICES()){
-                if(graphVertex.getLat() == location.longitude && graphVertex.getLng() == location.longitude){
+                if(graphVertex.getLat() == location.latitude && graphVertex.getLng() == location.longitude){
                     newStart = graphVertex;
                     break;
                 }
             }
         }
 
-        return newStart == null ? planedVertex : newStart;
+        return newStart == null ? null : newStart;
     }
 }

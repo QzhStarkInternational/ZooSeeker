@@ -18,11 +18,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sandiegozooseeker.PathFinder.PathFinder;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.graph.Zoo;
+import com.example.sandiegozooseeker.locations.Coords;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -42,6 +44,8 @@ public class NavigateFragment extends Fragment {
     private LocationRequest locationRequest;
     private CancellationTokenSource taskCancellationSource;
     private FusedLocationProviderClient fusedLocationClient;
+
+    private final static boolean isTesting = true;
 
     PathFinder pf;
 
@@ -137,21 +141,22 @@ public class NavigateFragment extends Fragment {
                     public void onSuccess(Location location) {
                         if (location != null) {
                             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            GraphVertex newStart = pf.checkLocation(currentLocation);
+                            GraphVertex newStart;
+                            if(isTesting){
+                                newStart = pf.checkLocation(Coords.CURRENT_LOCATION);
+                            } else {
+                                newStart = pf.checkLocation(currentLocation);
+                            }
 
-                            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
-                            builder.setPositiveButton("Replan", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if(newStart != null){
-                                        pf.replanPath(pf.getRemainingExhibits(), newStart);
-                                        updateDirections(pf.getDirection());
-                                    }
-                                }
-                            });
+                            if(newStart != null) {
+                                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+                                builder.setPositiveButton("Replan", (dialog, which) -> {
+                                    pf.replanPath(pf.getRemainingExhibits(), newStart);
+                                    updateDirections(pf.getDirection());
+                                });
 
-                            builder.setMessage("Did you take the wrong turn?").setTitle("Oops").show();
-
+                                builder.setMessage("Did you take the wrong turn?").setTitle("Oops").show();
+                            }
                         }
                     }
                 });
