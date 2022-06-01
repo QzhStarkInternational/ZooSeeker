@@ -64,6 +64,7 @@ public class VertexDatabaseTest {
     public void testGet() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
         GraphVertex insertedAnimal = new GraphVertex("rabbit habitat",null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags, 0.0, 0.0);
+
         dao.insert(insertedAnimal);
 
         GraphVertex graphVertex = dao.get("rabbit habitat");
