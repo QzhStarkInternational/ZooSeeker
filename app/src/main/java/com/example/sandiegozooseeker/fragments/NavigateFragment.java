@@ -1,15 +1,14 @@
 package com.example.sandiegozooseeker.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.location.LocationRequest;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -22,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.sandiegozooseeker.PathFinder.PathFinder;
+import com.example.sandiegozooseeker.PathFinder.PathFinderNew;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.locations.Coords;
@@ -31,11 +31,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.CancellationTokenSource;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class NavigateFragment extends Fragment {
     private TextView nextAnimalNameTextView;
@@ -46,19 +44,20 @@ public class NavigateFragment extends Fragment {
     private TextView animalText;
     private CardView nextView;
     private CardView previousAnimalView;
-    private boolean brief;
 
-    private Button skipButton;
+    private View skipButton;
 
-    private Switch briefDirections;
+    private Switch briefDirectionsSwitch;
 
     private LocationRequest locationRequest;
     private CancellationTokenSource taskCancellationSource;
     private FusedLocationProviderClient fusedLocationClient;
 
-    private final static boolean isTesting = true;
+    private final static boolean isTesting = false;
+    private Coords coords;
 
     PathFinder pf;
+    PathFinderNew pfNew;
 
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts
@@ -92,55 +91,42 @@ public class NavigateFragment extends Fragment {
         previousAnimalView = view.findViewById(R.id.previousView);
         previousAnimalNameTextView = (TextView) view.findViewById(R.id.previousAnimalName);
         previousAnimalDistanceTextView = (TextView) view.findViewById(R.id.previousAnimalDirection);
-        //skip button
-        skipButton = (Button)view.findViewById(R.id.skipButton);
-        briefDirections = (Switch)view.findViewById(R.id.switch1);
+        skipButton = view.findViewById(R.id.skipButton);
+        briefDirectionsSwitch = view.findViewById(R.id.switch1);
         previousAnimalView.setVisibility(View.INVISIBLE);
-        brief = false;
 
         pf = new PathFinder(getContext(), Zoo.getZoo(getContext()).getVertex("entrance_exit_gate"));
+        pfNew = new PathFinderNew(getContext(), Zoo.getZoo(getContext()).getVertex("entrance_exit_gate"));
 
-        updateDirections(pf.getDirection(brief));
+        //FOR TESTING LOCATION
+        Coords coords = new Coords();
+
+        updateDirections(pfNew.getNextDirection());
         checkLoc();
 
         nextView.setOnClickListener(view1 -> {
-            updateDirections(pf.getDirection(brief));
+            updateDirections(pfNew.getNextDirection());
+            coords.nextLoc();
             checkLoc();
         });
 
         previousAnimalView.setOnClickListener(view1 -> {
-            updateDirections(pf.getPrevious(brief));
+            updateDirections(pfNew.getPreviousDirection());
+            coords.previousLoc();
             checkLoc();
         });
 
         skipButton.setOnClickListener(view1 -> {
-            pf.skip();
-            updateDirections(pf.getDirection(brief));
-            openDialog();
+            updateDirections(pfNew.skip());
             checkLoc();
         });
 
-        briefDirections.setOnClickListener(view1 -> {
-            brief = !brief;
-            if (pf.getVisitedExhibits().size() != 0) {
-                pf.getPrevious(brief);
-                updateDirections(pf.getDirection(brief));
-            }
+        briefDirectionsSwitch.setOnCheckedChangeListener ((buttonView, isChecked) -> {
+            pfNew.toggleBriefDirections(isChecked);
+            updateDirections(pfNew.getCurrentPath());
         });
 
-    }
 
-    private void openDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setMessage("").setTitle("Replanning").setPositiveButton("ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     private void updateDirections(List<String> directions) {
@@ -150,25 +136,39 @@ public class NavigateFragment extends Fragment {
             directionString.append("\n").append(directions.get(i));
         }
 
-        animalText.setText(String.format("Directions to: %s", pf.currentAnimalName()));
+        animalText.setText(String.format("Directions to: %s", pfNew.currentAnimal()));
         directionText.setText(directionString.toString());
 
-        if (pf.getVisitedExhibits().size() != 0) {
-            previousAnimalNameTextView.setText(pf.previousAnimalName());
-            previousAnimalDistanceTextView.setText(pf.previousLabel());
+
+        if (pfNew.getVisitedExhibits().size() != 0) {
+            previousAnimalNameTextView.setText(pfNew.previousExhibitName());
+            previousAnimalDistanceTextView.setText(pfNew.previousExhibitDistance());
             previousAnimalView.setVisibility(View.VISIBLE);
         } else {
             previousAnimalView.setVisibility(View.INVISIBLE);
         }
 
-        if (pf.getRemainingExhibits().size() != 0) {
-            nextAnimalNameTextView.setText(pf.nextAnimalName());
-            nextAnimalDistanceTextView.setText(pf.nextLabel());
+        if (pfNew.getRemainingExhibits().size() != 0) {
+            nextAnimalNameTextView.setText(pfNew.nextExhibitName());
+            nextAnimalDistanceTextView.setText(pfNew.nextExhibitDistance());
             nextView.setVisibility(View.VISIBLE);
         } else {
             nextView.setVisibility(View.INVISIBLE);
         }
 
+        if(pfNew.getVisitedExhibits().size() == 0 || pfNew.getRemainingExhibits().size() == 0){
+            skipButton.setVisibility(View.INVISIBLE);
+        } else {
+            skipButton.setVisibility(View.VISIBLE);
+        }
+
+        if (pfNew.getVisitedExhibits().size() == 1 && pfNew.getRemainingExhibits().size() == 1) {
+            previousAnimalView.setVisibility(View.INVISIBLE);
+            skipButton.setVisibility(View.INVISIBLE);
+            nextAnimalNameTextView.setText(pfNew.nextExhibitName());
+            nextAnimalDistanceTextView.setText(pfNew.nextExhibitDistance());
+            nextView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void checkLoc(){
@@ -195,30 +195,32 @@ public class NavigateFragment extends Fragment {
         CancellationToken ct = cts.getToken();
 
         fusedLocationClient.getCurrentLocation(100, ct)
-                .addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            GraphVertex newStart;
-                            if(isTesting){
-                                newStart = pf.checkLocation(Coords.CURRENT_LOCATION);
-                            } else {
-                                newStart = pf.checkLocation(currentLocation);
-                            }
+                .addOnSuccessListener(requireActivity(), location -> {
+                    if (location != null) {
+                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        boolean ofTrack = false;
 
-                            if(newStart != null) {
-                                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
-                                builder.setPositiveButton("Replan", (dialog, which) -> {
-                                    pf.replanPath(pf.getRemainingExhibits(), newStart);
-                                    updateDirections(pf.getDirection(brief));
-                                });
+                        if (isTesting) {
+                            ofTrack = pfNew.checkLocation(Coords.GORILLA);
+                        } else {
+                            ofTrack = false; // pfNew.checkLocation(currentLocation)
+                        }
 
-                                builder.setMessage("Did you take the wrong turn?").setTitle("Oops").show();
-                            }
+                        if (ofTrack) {
+                            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+                            builder.setPositiveButton("Replan", (dialog, which) -> {
+                                if(isTesting){
+                                    updateDirections(pfNew.updateBasedOnLocation(Coords.GORILLA));
+
+                                } else {
+                                    updateDirections(pfNew.updateBasedOnLocation(currentLocation));
+                                }
+                            });
+
+
+                            builder.setMessage("Did you take the wrong turn?").setTitle("Oops").show();
                         }
                     }
                 });
-
     }
 }

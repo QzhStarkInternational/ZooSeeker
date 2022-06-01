@@ -61,14 +61,11 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     @Override
     public int getItemCount() {
-        //return vertices.size();
         return filteredVertices.size();
     }
 
-    //since graphVertex id is a string
     public String getVertexId(int position) {
         return filteredVertices.get(position).getId();
-        // return vertices.get(position).id;
     }
 
 
