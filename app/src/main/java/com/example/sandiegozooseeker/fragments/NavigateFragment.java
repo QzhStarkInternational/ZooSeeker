@@ -8,9 +8,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationRequest;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,13 +21,11 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
-import com.example.sandiegozooseeker.AnimalDB.VertexDao;
-import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.example.sandiegozooseeker.PathFinder.PathFinder;
 import com.example.sandiegozooseeker.R;
-import com.example.sandiegozooseeker.pathfinder.Directions;
-import com.example.sandiegozooseeker.pathfinder.IdentifiedWeightedEdge;
-import com.example.sandiegozooseeker.pathfinder.Pathfinder;
+import com.example.sandiegozooseeker.graph.GraphVertex;
+import com.example.sandiegozooseeker.locations.Coords;
+import com.example.sandiegozooseeker.graph.Zoo;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,129 +33,142 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import org.jgrapht.GraphPath;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class NavigateFragment extends Fragment {
-    private CardView nextView;
     private TextView nextAnimalNameTextView;
     private TextView nextAnimalDistanceTextView;
+    private TextView previousAnimalNameTextView;
+    private TextView previousAnimalDistanceTextView;
     private TextView directionText;
     private TextView animalText;
-    private List<String> directions;
-    private List<String> orderedList;
-    private VertexDao vertexDao;
-    private LocationRequest locationRequest;
-    private CancellationTokenSource taskCancellationSource;
-
-    private FusedLocationProviderClient fusedLocationClient;
-
-    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
-        registerForActivityResult(new ActivityResultContracts
-                .RequestMultiplePermissions(), result -> {
-                Boolean fineLocationGranted = result.getOrDefault(
-                    Manifest.permission.ACCESS_FINE_LOCATION, false);
-                Boolean coarseLocationGranted = result.getOrDefault(
-                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
-                if (fineLocationGranted != null && fineLocationGranted) {
-                    // Precise location access granted.
-                } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                    // Only approximate location access granted.
-                } else {
-                    // No location access granted.
-                }
-            }
-        );
-
-    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private CardView nextView;
+    private CardView previousAnimalView;
+    private boolean brief;
 
     private Button skipButton;
-    Directions dir;
-    Pathfinder pf;
-    List<String> selectedExhibits;
+
+    private Switch briefDirections;
+
+    private LocationRequest locationRequest;
+    private CancellationTokenSource taskCancellationSource;
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private final static boolean isTesting = true;
+
+    PathFinder pf;
+
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts
+                            .RequestMultiplePermissions(), result -> {
+                        Boolean fineLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_FINE_LOCATION, false);
+                         Boolean coarseLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                        if (fineLocationGranted != null && fineLocationGranted) {
+                            // Precise location access granted.
+                        } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                            // Only approximate location access granted.
+                        } else {
+                            // No location access granted.
+                        }
+                    }
+            );
+
 
     public NavigateFragment() {
         super(R.layout.fragment_navigate);
     }
 
-    //keep track of which animal exhibit direction to display
-    private int mCurrentIndex = 0;
-
-
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        vertexDao = VertexDatabase.getSingleton(getActivity()).vertexDao();
-        selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
-        //System.out.println(selectedExhibits);
-        pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
-
-        List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
-        List<String> orderedPaths = pf.pathsToStringList(plan);
-        // System.out.println(orderedPaths);
-
-        directionText = (TextView)view.findViewById(R.id.direction_text);
-        animalText = (TextView) view.findViewById(R.id.animal_name);
+        directionText = view.findViewById(R.id.direction_text);
+        animalText = view.findViewById(R.id.animal_name);
         nextView = view.findViewById(R.id.nextView);
         nextAnimalNameTextView = view.findViewById(R.id.textView2);
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
-
+        previousAnimalView = view.findViewById(R.id.previousView);
+        previousAnimalNameTextView = (TextView) view.findViewById(R.id.previousAnimalName);
+        previousAnimalDistanceTextView = (TextView) view.findViewById(R.id.previousAnimalDirection);
         //skip button
         skipButton = (Button)view.findViewById(R.id.skipButton);
-        //set up directions and update heading (animal name)
-        dir = new Directions(plan,getActivity());
-        directions = dir.getDirectionsAllAnimals();
-        orderedList = dir.getOrderedList();
-        //display directions to first exhibit
-        updateDirections();
+        briefDirections = (Switch)view.findViewById(R.id.switch1);
+        previousAnimalView.setVisibility(View.INVISIBLE);
+        brief = false;
 
-        if(orderedList.size() < 2){
-            nextView.setVisibility(View.GONE);
-        } else {
-            nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
-            nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
+        pf = new PathFinder(getContext(), Zoo.getZoo(getContext()).getVertex("entrance_exit_gate"));
+
+        updateDirections(pf.getDirection(brief));
+        checkLoc();
+
+        nextView.setOnClickListener(view1 -> {
+            updateDirections(pf.getDirection(brief));
+            checkLoc();
+        });
+
+        previousAnimalView.setOnClickListener(view1 -> {
+            updateDirections(pf.getPrevious(brief));
+            checkLoc();
+        });
+
+        skipButton.setOnClickListener(view1 -> {
+            pf.skip();
+            updateDirections(pf.getDirection(brief));
+            openDialog();
+            checkLoc();
+        });
+
+        briefDirections.setOnClickListener(view1 -> {
+            brief = !brief;
+            if (pf.getVisitedExhibits().size() != 0) {
+                pf.getPrevious(brief);
+                updateDirections(pf.getDirection(brief));
+            }
+        });
+
+    }
+
+    private void openDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setMessage("").setTitle("Replanning").setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void updateDirections(List<String> directions) {
+        StringBuilder directionString = new StringBuilder();
+
+        for(int i = 0; i < directions.size(); i++){
+            directionString.append("\n").append(directions.get(i));
         }
 
+        animalText.setText(String.format("Directions to: %s", pf.currentAnimalName()));
+        directionText.setText(directionString.toString());
 
-        nextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCurrentIndex = (mCurrentIndex+1) % directions.size();
-                updateDirections();
-                checkLoc();
-            }
-        });
+        if (pf.getVisitedExhibits().size() != 0) {
+            previousAnimalNameTextView.setText(pf.previousAnimalName());
+            previousAnimalDistanceTextView.setText(pf.previousLabel());
+            previousAnimalView.setVisibility(View.VISIBLE);
+        } else {
+            previousAnimalView.setVisibility(View.INVISIBLE);
+        }
 
-        skipButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //completely remove exhibit and replan (everything from current index onwards)
-                //update orderedlist and deselect isSelected
-                if (((mCurrentIndex+1) % directions.size()) != 0) {
-                    Vertex vertexToChange = vertexDao.get(orderedList.get(mCurrentIndex + 1));
-                    System.out.println(vertexToChange);
-                    vertexToChange.isSelected = !vertexToChange.isSelected;
-                    vertexDao.update(vertexToChange);
-                    //replanning
-                    List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(Vertex.Kind.EXHIBIT);
-                    pf = new Pathfinder(selectedExhibits, getActivity(), "entrance_exit_gate");
-                    List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
-                    dir = new Directions(plan, getActivity());
-                    directions = dir.getDirectionsAllAnimals();
-                    orderedList = dir.getOrderedList();
-                    checkLoc();
-                }
-                //mCurrentIndex = (mCurrentIndex+1) % directions.size();
-                openDialog();
+        if (pf.getRemainingExhibits().size() != 0) {
+            nextAnimalNameTextView.setText(pf.nextAnimalName());
+            nextAnimalDistanceTextView.setText(pf.nextLabel());
+            nextView.setVisibility(View.VISIBLE);
+        } else {
+            nextView.setVisibility(View.INVISIBLE);
+        }
 
-                updateDirections();
-
-            }
-        });
-
-        // Check permission
-        checkLoc();
     }
 
     private void checkLoc(){
@@ -183,75 +194,31 @@ public class NavigateFragment extends Fragment {
         CancellationTokenSource cts = new CancellationTokenSource();
         CancellationToken ct = cts.getToken();
 
-        String provider = LocationManager.GPS_PROVIDER;
-        LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
         fusedLocationClient.getCurrentLocation(100, ct)
                 .addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            Vertex currentVertex = dir.getCurrentVertex(mCurrentIndex);
+                            GraphVertex newStart;
+                            if(isTesting){
+                                newStart = pf.checkLocation(Coords.CURRENT_LOCATION);
+                            } else {
+                                newStart = pf.checkLocation(currentLocation);
+                            }
 
-                            if (currentVertex.getLat() != currentLocation.latitude && currentVertex.getLng() != currentLocation.longitude) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                                builder.setPositiveButton("Replan", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        int maxIndex = pf.getvertexNums();
-
-                                        for(int i = 0; i < maxIndex; i++){
-                                            Vertex currentV = pf.getVertexId(i);
-                                            if(currentV.getLat() == currentLocation.latitude && currentV.getLng() == currentLocation.longitude){
-                                                pf = new Pathfinder(selectedExhibits, getActivity(), currentV.id);
-                                                List<GraphPath<String, IdentifiedWeightedEdge>> plan = pf.plan();
-                                                dir = new Directions(plan, getActivity());
-                                                directions = dir.getDirectionsAllAnimals();
-                                                orderedList = dir.getOrderedList();
-                                                updateDirections();
-                                            }
-                                        }
-                                    }
+                            if(newStart != null) {
+                                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+                                builder.setPositiveButton("Replan", (dialog, which) -> {
+                                    pf.replanPath(pf.getRemainingExhibits(), newStart);
+                                    updateDirections(pf.getDirection(brief));
                                 });
-                                builder.setMessage("Did you take the wrong turn?").setTitle("Oops");
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
+
+                                builder.setMessage("Did you take the wrong turn?").setTitle("Oops").show();
                             }
                         }
                     }
                 });
-    }
-
-
-    private void openDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setMessage("").setTitle("Replanning");
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-
-
-    //update question method
-    private void updateDirections() {
-        String direction = directions.get(mCurrentIndex);
-
-        if(orderedList.size() < 2) {
-            animalText.setText("");
-            directionText.setText("");
-        } else {
-            animalText.setText("Directions to: " + vertexDao.getAnimalName(orderedList.get(mCurrentIndex)));
-            directionText.setText(direction);
-            if (mCurrentIndex == directions.size() - 2) {
-                skipButton.setVisibility(View.GONE);
-            }
-            if (mCurrentIndex == directions.size() - 1) {
-                nextView.setVisibility(View.GONE);
-            } else {
-                nextAnimalNameTextView.setText(vertexDao.getAnimalName(orderedList.get(mCurrentIndex + 1)));
-                nextAnimalDistanceTextView.setText(dir.nextLabel(mCurrentIndex));
-            }
-        }
 
     }
 }

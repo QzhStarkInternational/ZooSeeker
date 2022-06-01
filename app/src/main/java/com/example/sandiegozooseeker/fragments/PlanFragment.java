@@ -1,10 +1,6 @@
 package com.example.sandiegozooseeker.fragments;
 
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 
@@ -14,13 +10,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sandiegozooseeker.AnimalDB.Vertex;
 import com.example.sandiegozooseeker.AnimalDB.VertexViewModel;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.adapaters.PlanListAdapter;
-import com.example.sandiegozooseeker.pathfinder.Pathfinder;
 import java.util.List;
-import com.google.android.material.textfield.TextInputEditText;
 
 public class PlanFragment extends Fragment {
     public RecyclerView recyclerView;
@@ -66,10 +59,5 @@ public class PlanFragment extends Fragment {
             }
 
         });
-
-        List<String> animal = viewModel.getSelectedAnimalId();
-        Pathfinder p = new Pathfinder(animal, getContext(), "entrance_exit_gate");
-
-
     }
 }
