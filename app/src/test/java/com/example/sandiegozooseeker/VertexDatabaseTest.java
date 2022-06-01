@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class ZooGraphVertexDatabaseTest {
+public class VertexDatabaseTest {
     private VertexDao dao;
     private VertexDatabase db;
 
@@ -50,8 +50,8 @@ public class ZooGraphVertexDatabaseTest {
     public void testInsert() {
         List<String> tag1 = new ArrayList<>(Arrays.asList("rabbit","mammal"));
         List<String> tag2 = new ArrayList<>(Arrays.asList("wolves","mammal"));
-        GraphVertex v1 = new GraphVertex("rabbit habitat", GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tag1);
-        GraphVertex v2 = new GraphVertex("wolf habitat", GraphVertex.Kind.EXHIBIT,"Wolves", tag2);
+        GraphVertex v1 = new GraphVertex("rabbit habitat", null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tag1, 0.0, 0.0);
+        GraphVertex v2 = new GraphVertex("wolf habitat",null, GraphVertex.Kind.EXHIBIT,"Wolves", tag2,  0.0, 0.0);
 
         dao.insert(v1);
         dao.insert(v2);
@@ -63,7 +63,7 @@ public class ZooGraphVertexDatabaseTest {
     @Test
     public void testGet() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
-        GraphVertex insertedAnimal = new GraphVertex("rabbit habitat", GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags);
+        GraphVertex insertedAnimal = new GraphVertex("rabbit habitat",null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags, 0.0, 0.0);
         dao.insert(insertedAnimal);
 
         GraphVertex graphVertex = dao.get("rabbit habitat");
@@ -76,7 +76,7 @@ public class ZooGraphVertexDatabaseTest {
     @Test
     public void testDelete() {
         List<String> tags = new ArrayList<>(Arrays.asList("rabbit","mammal"));
-        GraphVertex graphVertex = new GraphVertex("rabbit habitat", GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags);
+        GraphVertex graphVertex = new GraphVertex("rabbit habitat",null, GraphVertex.Kind.EXHIBIT,"Rabbits In the Wild", tags,  0.0, 0.0);
         dao.insert(graphVertex);
 
         graphVertex = dao.get("rabbit habitat");

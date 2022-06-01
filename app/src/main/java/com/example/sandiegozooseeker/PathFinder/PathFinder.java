@@ -13,7 +13,6 @@ import com.example.sandiegozooseeker.graph.IdentifiedWeightedEdge;
 import com.example.sandiegozooseeker.graph.Zoo;
 import com.example.sandiegozooseeker.graph.ZooGraph;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.ar.sceneform.rendering.Vertex;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
