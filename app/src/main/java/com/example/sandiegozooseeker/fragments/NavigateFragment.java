@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.location.LocationRequest;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,12 +35,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class NavigateFragment extends Fragment {
     private TextView nextAnimalNameTextView;
     private TextView nextAnimalDistanceTextView;
+    private TextView previousAnimalNameTextView;
+    private TextView previousAnimalDistanceTextView;
     private TextView directionText;
     private TextView animalText;
+    private CardView nextView;
+    private CardView previousAnimalView;
+
+    private Button skipButton;
 
     private LocationRequest locationRequest;
     private CancellationTokenSource taskCancellationSource;
@@ -75,10 +83,17 @@ public class NavigateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         directionText = view.findViewById(R.id.direction_text);
         animalText = view.findViewById(R.id.animal_name);
-        CardView nextView = view.findViewById(R.id.nextView);
+        nextView = view.findViewById(R.id.nextView);
         nextAnimalNameTextView = view.findViewById(R.id.textView2);
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
-        CardView previousAnimalView = view.findViewById(R.id.previousView);
+        previousAnimalView = view.findViewById(R.id.previousView);
+
+        previousAnimalView = view.findViewById(R.id.previousView);
+        previousAnimalNameTextView = (TextView) view.findViewById(R.id.previousAnimalName);
+        previousAnimalDistanceTextView = (TextView) view.findViewById(R.id.previousAnimalDirection);
+        //skip button
+        skipButton = (Button)view.findViewById(R.id.skipButton);
+        previousAnimalView.setVisibility(View.INVISIBLE);
 
         pf = new PathFinder(getContext(), Zoo.getZoo(getContext()).getVertex("entrance_exit_gate"));
 
@@ -93,8 +108,29 @@ public class NavigateFragment extends Fragment {
         previousAnimalView.setOnClickListener(view1 -> {
             updateDirections(pf.getPrevious());
             checkLoc();
+            updateDirections(pf.getPrevious());
+            checkLoc();
         });
 
+        skipButton.setOnClickListener(view1 -> {
+            openDialog();
+            checkLoc();
+        });
+
+
+    }
+
+    private void openDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setMessage("").setTitle("Replanning").setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void updateDirections(List<String> directions) {
@@ -107,8 +143,22 @@ public class NavigateFragment extends Fragment {
         animalText.setText(String.format("Directions to: %s", pf.currentAnimalName()));
         directionText.setText(directionString.toString());
 
-        nextAnimalNameTextView.setText(pf.nextAnimalName());
-        nextAnimalDistanceTextView.setText(pf.nextLabel());
+        if (pf.getAnimalIndex()-1 != 0) {
+            previousAnimalNameTextView.setText(pf.previousAnimalName());
+            previousAnimalDistanceTextView.setText(pf.previousLabel());
+            previousAnimalView.setVisibility(View.VISIBLE);
+        }
+        else {
+            previousAnimalView.setVisibility(View.INVISIBLE);
+        }
+        if (pf.getAnimalIndex() != pf.getOrderedNamedList().size()) {
+            nextAnimalNameTextView.setText(pf.nextAnimalName());
+            nextAnimalDistanceTextView.setText(pf.nextLabel());
+            nextView.setVisibility(View.VISIBLE);
+        }
+        else {
+            nextView.setVisibility(View.INVISIBLE);
+        }
 
     }
 

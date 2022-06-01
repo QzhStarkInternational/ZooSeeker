@@ -12,6 +12,7 @@ import com.example.sandiegozooseeker.graph.Zoo;
 import com.example.sandiegozooseeker.graph.ZooGraph;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
@@ -22,8 +23,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class PathFinder {
+    private final VertexDao vertexDao;
     private List<GraphVertex> exhibits;
     private List<GraphVertex> remainingExhibits;
+    private List<GraphVertex> visitedExhibits;
     private final ZooGraph zooGraph;
     private GraphVertex start;
     private final GraphVertex end;
@@ -32,16 +35,22 @@ public class PathFinder {
     List<String> animalList;
     Context context;
 
+    private Map<String,Integer> tempMapping;
+    List<String> orderedNamedList;
+
     public PathFinder(Context context, GraphVertex start){
-        VertexDao vertexDao = VertexDatabase.getSingleton(context).vertexDao();
+        vertexDao = VertexDatabase.getSingleton(context).vertexDao();
         this.zooGraph = Zoo.getZoo(context);
         this.context = context;
-        this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
+        this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT );
         this.remainingExhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
+        this.visitedExhibits = new ArrayList<GraphVertex>();
         this.start = start;
         this.end = zooGraph.getVertex("entrance_exit_gate");
         this.paths = createPlan();
         this.animalList = getOrderedList();
+        this.tempMapping = getDistanceMapping();
+        this.orderedNamedList = getOrderedNamedList();
         animalIndex = 0;
     }
 
@@ -52,9 +61,16 @@ public class PathFinder {
         this.animalList = getOrderedList();
         this.animalIndex = 0;
     }
+    public int getAnimalIndex() {
+        return animalIndex;
+    }
 
     public List<GraphVertex> getRemainingExhibits(){
         return remainingExhibits;
+    }
+
+    public List<GraphVertex> getVisitedExhibits(){
+        return visitedExhibits;
     }
 
     public String nextAnimalName(){
@@ -62,15 +78,27 @@ public class PathFinder {
             return "NULL";
         }
 
-        return zooGraph.getVertex(animalList.get(animalIndex)).getName();
+        return vertexDao.getAnimalName(orderedNamedList.get(animalIndex));
+        //return orderedNamedList.get(animalIndex);
+        //return zooGraph.getVertex(animalList.get(animalIndex)).getName();
     }
 
-    public String currentAnimalName(){
-        if(animalIndex >= animalList.size()){
+    public String previousAnimalName(){
+        if(animalIndex - 2 < 0){
             return "NULL";
         }
 
-        return zooGraph.getVertex(animalList.get(animalIndex - 1)).getName();
+        return vertexDao.getAnimalName(orderedNamedList.get(animalIndex-2));
+        //return zooGraph.getVertex(animalList.get(animalIndex-1)).getName();
+    }
+
+    public String currentAnimalName(){
+        if(animalIndex-1 >= animalList.size()){
+            return "NULL";
+        }
+
+        return vertexDao.getAnimalName(orderedNamedList.get(animalIndex-1));
+        //return zooGraph.getVertex(animalList.get(animalIndex - 1)).getName();
     }
 
     public List<String> getDirection(){
@@ -79,6 +107,7 @@ public class PathFinder {
         if(animalIndex >= paths.size()){
             return directions;
         }
+
 
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex);
         List<String> vertices = path.getVertexList();
@@ -105,10 +134,8 @@ public class PathFinder {
                 }
             }
 
-            remainingExhibits.remove(animalToRemove);
+            visitedExhibits.add(remainingExhibits.remove(animalToRemove));
         }
-
-
 
         return directions;
     }
@@ -135,11 +162,21 @@ public class PathFinder {
         }
 
         animalIndex--;
+        remainingExhibits.add(0, visitedExhibits.remove(visitedExhibits.size()-1));
         return directions;
     }
 
     public String nextLabel(){
-        if (animalIndex + 1 >= paths.size()) {
+        if (animalIndex >= paths.size()) {
+            return "";
+        }
+
+        GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex);
+        return path.getWeight() + "m";
+    }
+
+    public String previousLabel(){
+        if (animalIndex - 2 < 0) {
             return "";
         }
 
@@ -159,7 +196,18 @@ public class PathFinder {
     }
 
     private List<GraphPath<String, IdentifiedWeightedEdge>> createPlan(){
-        List<GraphVertex> tempExhibits = exhibits;
+        List<GraphVertex> tempExhibits = new ArrayList<>();
+        for (GraphVertex s : exhibits) {
+            tempExhibits.add(s);
+        }
+        //check for parent-child exhibits
+        for (int x = 0; x<tempExhibits.size();x++) {
+            if (tempExhibits.get(x).group_id != null) {
+                //replace with parent vertex
+                GraphVertex id = vertexDao.getParentVertex(tempExhibits.get(x).group_id);
+                tempExhibits.set(x,id);
+            }
+        }
         List<GraphPath<String, IdentifiedWeightedEdge>> paths = new ArrayList<>();
 
         GraphPath<String, IdentifiedWeightedEdge> minPath = null;
@@ -200,13 +248,26 @@ public class PathFinder {
     }
 
     public List<String> pathsToStringList() {
+        List<GraphVertex> tempExhibits = new ArrayList<>();
+        for (GraphVertex s : exhibits) {
+            tempExhibits.add(s);
+        }
 
         List<String> info = new ArrayList<String>();
         int totalDistance = 0;
 
         for (GraphPath<String, IdentifiedWeightedEdge> path : this.paths) {
             int distance = (int)path.getWeight();
+            String id = zooGraph.getVertex(path.getEndVertex()).getId();
             String name = zooGraph.getVertex(path.getEndVertex()).getName();
+            for (GraphVertex s : tempExhibits) {
+                if (s.group_id != null && s.group_id.equals(id)) {
+                    name = s.name;
+                    tempExhibits.remove(s);
+                    break;
+                }
+            }
+
             totalDistance += distance;
             info.add(name + " " + totalDistance + "m");
         }
@@ -226,14 +287,27 @@ public class PathFinder {
     }
 
     public Map<String,Integer> getDistanceMapping() {
+        List<GraphVertex> tempExhibits = new ArrayList<>();
+        orderedNamedList = new ArrayList<>();
+        for (GraphVertex s : exhibits) {
+            tempExhibits.add(s);
+        }
         Map<String, Integer> distanceMapping = new HashMap();
         int totalDistance = 0;
 
         for (GraphPath<String, IdentifiedWeightedEdge> path : this.paths) {
             int distance = (int)path.getWeight();
             String id = zooGraph.getVertex(path.getEndVertex()).getId();
+            for (GraphVertex s : tempExhibits) {
+                if (s.group_id != null && s.group_id.equals(id)) {
+                    id = s.id;
+                    tempExhibits.remove(s);
+                    break;
+                }
+            }
             totalDistance += distance;
             distanceMapping.put(id,totalDistance);
+            orderedNamedList.add(id);
         }
 
         return distanceMapping;
@@ -258,5 +332,10 @@ public class PathFinder {
         }
 
         return newStart == null ? null : newStart;
+    }
+
+    //return ordered list for naming on labels (parent-child)
+    public List<String> getOrderedNamedList() {
+        return orderedNamedList;
     }
 }
