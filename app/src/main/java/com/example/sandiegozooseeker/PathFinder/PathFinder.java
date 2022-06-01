@@ -26,6 +26,7 @@ public class PathFinder {
     private final VertexDao vertexDao;
     private List<GraphVertex> exhibits;
     private List<GraphVertex> remainingExhibits;
+    private List<GraphVertex> visitedExhibits;
     private final ZooGraph zooGraph;
     private GraphVertex start;
     private final GraphVertex end;
@@ -43,6 +44,7 @@ public class PathFinder {
         this.context = context;
         this.exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT );
         this.remainingExhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
+        this.visitedExhibits = new ArrayList<GraphVertex>();
         this.start = start;
         this.end = zooGraph.getVertex("entrance_exit_gate");
         this.paths = createPlan();
@@ -67,6 +69,10 @@ public class PathFinder {
         return remainingExhibits;
     }
 
+    public List<GraphVertex> getVisitedExhibits(){
+        return visitedExhibits;
+    }
+
     public String nextAnimalName(){
         if(animalIndex >= animalList.size()){
             return "NULL";
@@ -87,7 +93,7 @@ public class PathFinder {
     }
 
     public String currentAnimalName(){
-        if(animalIndex >= animalList.size()){
+        if(animalIndex-1 >= animalList.size()){
             return "NULL";
         }
 
@@ -101,6 +107,7 @@ public class PathFinder {
         if(animalIndex >= paths.size()){
             return directions;
         }
+
 
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex);
         List<String> vertices = path.getVertexList();
@@ -117,20 +124,18 @@ public class PathFinder {
 
         animalIndex++;
 
-//        if(animalIndex > 1){
-//            int animalToRemove = 0;
-//
-//            for(int i = 0; i < exhibits.size(); i++){
-//                if(Objects.equals(remainingExhibits.get(i).getId(), animalList.get(animalIndex - 2))){
-//                    animalToRemove = i;
-//                    break;
-//                }
-//            }
-//
-//            remainingExhibits.remove(animalToRemove);
-//        }
+        if(animalIndex > 1){
+            int animalToRemove = 0;
 
+            for(int i = 0; i < exhibits.size(); i++){
+                if(Objects.equals(remainingExhibits.get(i).getId(), animalList.get(animalIndex - 2))){
+                    animalToRemove = i;
+                    break;
+                }
+            }
 
+            visitedExhibits.add(remainingExhibits.remove(animalToRemove));
+        }
 
         return directions;
     }
@@ -157,6 +162,7 @@ public class PathFinder {
         }
 
         animalIndex--;
+        remainingExhibits.add(0, visitedExhibits.remove(visitedExhibits.size()-1));
         return directions;
     }
 
