@@ -121,9 +121,9 @@ public class PathFinder {
     public List<String> getDirection(boolean brief){
         List<String> directions = new ArrayList<>();
 
-        if(animalIndex >= paths.size()){
-            return directions;
-        }
+//        if(animalIndex >= paths.size()){
+//            return directions;
+//        }
 
         GraphPath<String, IdentifiedWeightedEdge> path = paths.get(animalIndex);
         List<String> vertices = path.getVertexList();
@@ -238,17 +238,15 @@ public class PathFinder {
     }
 
     public void skip() {
-        animalIndex--;
-        exhibits.remove(animalIndex);
-        remainingExhibits.remove(0);
-        GraphVertex vertexToChange = vertexDao.get(orderedNamedList.get(animalIndex));
-        System.out.println(vertexToChange);
+        GraphVertex vertexToChange = vertexDao.get(remainingExhibits.get(0).getId());
         vertexToChange.isSelected = !vertexToChange.isSelected;
         vertexDao.update(vertexToChange);
-        orderedNamedList.remove(animalIndex);
-        if (visitedExhibits.size() != 0) {
-            start = visitedExhibits.get(visitedExhibits.size()-1);
-        }
+        exhibits = vertexDao.getSelectedExhibits(GraphVertex.Kind.EXHIBIT);
+        remainingExhibits.remove(0);
+
+//        if (visitedExhibits.size() != 0) {
+//            start = visitedExhibits.get(visitedExhibits.size()-1);
+//        }
         this.replanPath(remainingExhibits, start);
     }
 
@@ -327,6 +325,9 @@ public class PathFinder {
             minDistance = Integer.MAX_VALUE;
         }
 
+        if (!(visitedExhibits.isEmpty())) {
+            startVertex = visitedExhibits.get(visitedExhibits.size()-1);
+        }
         GraphPath<String, IdentifiedWeightedEdge> exitPath = DijkstraShortestPath.findPathBetween(zooGraph.getGRAPH(), startVertex.getId(), end.getId());
         paths.add(exitPath);
 

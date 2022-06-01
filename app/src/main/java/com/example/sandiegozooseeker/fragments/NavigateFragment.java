@@ -165,8 +165,10 @@ public class NavigateFragment extends Fragment {
             nextAnimalNameTextView.setText(pf.nextAnimalName());
             nextAnimalDistanceTextView.setText(pf.nextLabel());
             nextView.setVisibility(View.VISIBLE);
+            skipButton.setVisibility(View.VISIBLE);
         } else {
             nextView.setVisibility(View.INVISIBLE);
+            skipButton.setVisibility(View.INVISIBLE);
         }
 
     }
