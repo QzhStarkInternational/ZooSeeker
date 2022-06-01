@@ -247,6 +247,9 @@ public class PathFinder {
         vertexToChange.isSelected = !vertexToChange.isSelected;
         vertexDao.update(vertexToChange);
         orderedNamedList.remove(animalIndex);
+        if (visitedExhibits.size() != 0) {
+            start = visitedExhibits.get(visitedExhibits.size()-1);
+        }
         this.replanPath(remainingExhibits, start);
     }
 
