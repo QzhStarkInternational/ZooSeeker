@@ -19,13 +19,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sandiegozooseeker.PathFinder.PathFinder;
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.graph.GraphVertex;
-import com.example.sandiegozooseeker.graph.Zoo;
 import com.example.sandiegozooseeker.locations.Coords;
+import com.example.sandiegozooseeker.graph.Zoo;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -87,8 +86,6 @@ public class NavigateFragment extends Fragment {
         nextAnimalNameTextView = view.findViewById(R.id.textView2);
         nextAnimalDistanceTextView = view.findViewById(R.id.textView);
         previousAnimalView = view.findViewById(R.id.previousView);
-
-        previousAnimalView = view.findViewById(R.id.previousView);
         previousAnimalNameTextView = (TextView) view.findViewById(R.id.previousAnimalName);
         previousAnimalDistanceTextView = (TextView) view.findViewById(R.id.previousAnimalDirection);
         //skip button
@@ -108,11 +105,11 @@ public class NavigateFragment extends Fragment {
         previousAnimalView.setOnClickListener(view1 -> {
             updateDirections(pf.getPrevious());
             checkLoc();
-            updateDirections(pf.getPrevious());
-            checkLoc();
         });
 
         skipButton.setOnClickListener(view1 -> {
+            pf.skip();
+            updateDirections(pf.getDirection());
             openDialog();
             checkLoc();
         });

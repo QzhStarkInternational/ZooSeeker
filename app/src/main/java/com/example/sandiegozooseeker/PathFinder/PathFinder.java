@@ -11,6 +11,7 @@ import com.example.sandiegozooseeker.graph.IdentifiedWeightedEdge;
 import com.example.sandiegozooseeker.graph.Zoo;
 import com.example.sandiegozooseeker.graph.ZooGraph;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.ar.sceneform.rendering.Vertex;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -164,6 +165,18 @@ public class PathFinder {
         animalIndex--;
         remainingExhibits.add(0, visitedExhibits.remove(visitedExhibits.size()-1));
         return directions;
+    }
+
+    public void skip() {
+        animalIndex--;
+        exhibits.remove(animalIndex);
+        remainingExhibits.remove(0);
+        GraphVertex vertexToChange = vertexDao.get(orderedNamedList.get(animalIndex));
+        System.out.println(vertexToChange);
+        vertexToChange.isSelected = !vertexToChange.isSelected;
+        vertexDao.update(vertexToChange);
+        orderedNamedList.remove(animalIndex);
+        this.replanPath(remainingExhibits, start);
     }
 
     public String nextLabel(){
