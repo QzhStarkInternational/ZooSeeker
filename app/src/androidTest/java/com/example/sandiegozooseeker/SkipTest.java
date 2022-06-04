@@ -29,6 +29,7 @@ import androidx.test.filters.LargeTest;
 import com.example.sandiegozooseeker.AnimalDB.DataConverter;
 import com.example.sandiegozooseeker.AnimalDB.VertexDao;
 import com.example.sandiegozooseeker.AnimalDB.VertexDatabase;
+import com.example.sandiegozooseeker.PathFinder.PathFinderNew;
 import com.example.sandiegozooseeker.graph.GraphVertex;
 import com.example.sandiegozooseeker.utils.JSONLoader;
 import com.example.sandiegozooseeker.PathFinder.PathFinder;
@@ -85,17 +86,10 @@ public class SkipTest {
 
         onView(withId(R.id.navigateFragment)).perform(click());
         List<String> selectedExhibits = vertexDao.getSelectedExhibitsID(GraphVertex.Kind.EXHIBIT);
-        PathFinder pf = new PathFinder(ApplicationProvider.getApplicationContext(), vertexDao.get("entrance_exit_gate"));
-        List<String> orderedList = pf.getOrderedNamedList();
-        //ignore any pop up alert dialog messages
-        onView(withText("Did you take the wrong turn?")).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack());
+        PathFinderNew pf = new PathFinderNew(ApplicationProvider.getApplicationContext(), vertexDao.get("entrance_exit_gate"));
         //click skip button - currently directions displayed should be from entrance/exit gate to first exhibit
         //we want to skip this first exhibit and get directions to the next exhibit
         onView(withId(R.id.skipButton)).perform(click());
-        //onView(withText("Replanning")).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack());
-        onView(withText("Did you take the wrong turn?")).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack());
-        onView(withText("Replanning")).inRoot(isDialog()).check(matches(isDisplayed())).perform(pressBack());
-        //check that text in the next view matches what we expect
         onView(withId(R.id.textView2))
                 .check(matches(withText("Entrance and Exit Gate")));
 

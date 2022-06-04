@@ -73,12 +73,8 @@ public class GraphVertex {
     public double getLng() { return this.lng; }
     public boolean getIsSelected(){ return this.isSelected; }
 
-    public int compareTo(GraphVertex graphVertex){
-        if(Objects.equals(this.id, graphVertex.id)){
-            return 0;
-        }
-
-        return -1;
+    public boolean equals(GraphVertex graphVertex){
+        return Objects.equals(this.id, graphVertex.id);
     }
 
     @NonNull

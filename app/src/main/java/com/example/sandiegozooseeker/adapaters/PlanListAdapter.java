@@ -9,11 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sandiegozooseeker.PathFinder.PathFinder;
+import com.example.sandiegozooseeker.PathFinder.PathFinderNew;
 import com.example.sandiegozooseeker.graph.GraphVertex;
 
 import com.example.sandiegozooseeker.R;
 import com.example.sandiegozooseeker.graph.Zoo;
+import com.example.sandiegozooseeker.PathFinder.PathFinder;
 
 
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
     private List<GraphVertex> vertices = Collections.emptyList();
     private BiConsumer<GraphVertex, View> onClicked;
     private final Context context;
-    private Map<String, Integer> distanceMapping;
+    private Map<String, Integer> distances;
 
     public PlanListAdapter(Context context) {
         this.context = context;
@@ -34,12 +35,24 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
     public void setVertices(List<GraphVertex> newVertices) {
         this.vertices.clear();
 
-        PathFinder pf = new PathFinder(context, Zoo.getZoo(context).getVertex("entrance_exit_gate"));
-        distanceMapping = pf.getDistanceMapping();
+        PathFinderNew pf = new PathFinderNew(context, Zoo.getZoo(context).getVertex("entrance_exit_gate"));
+        distances = pf.getDistances();
 
         newVertices.sort((v1, v2) -> {
-            Integer vertex1 = distanceMapping.get(v1.getId());
-            Integer vertex2 = distanceMapping.get(v2.getId());
+            Integer vertex1;
+            Integer vertex2;
+
+            if(v1.getGroup_id() != null){
+                vertex1 = distances.get(v1.getGroup_id());
+            } else {
+                vertex1 = distances.get(v1.getId());
+            }
+
+            if(v2.getGroup_id() != null){
+                vertex2 = distances.get(v2.getGroup_id());
+            } else {
+                vertex2 = distances.get(v2.getId());
+            }
 
             if (vertex1 == null)
                 return -1;
@@ -99,7 +112,12 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
         public void setVertex(GraphVertex graphVertex) {
             this.graphVertex = graphVertex;
             this.textView.setText(graphVertex.getName());
-            this.distance.setText(String.format(Locale.US, "%d m", distanceMapping.get(graphVertex.getId())));
+
+            if(graphVertex.getGroup_id() != null){
+                this.distance.setText(String.format(Locale.US, "%d m", distances.get(graphVertex.getGroup_id())));
+            } else {
+                this.distance.setText(String.format(Locale.US, "%d m", distances.get(graphVertex.getId())));
+            }
         }
     }
 }
